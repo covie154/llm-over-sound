@@ -1,0 +1,385 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineSystem.cmake:204 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.26200 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.6.3+07e294721 for .NET Framework
+      Build started 12/12/2025 12:41:41 am.
+      
+      Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\3.26.4\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdC.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdC.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+        CMakeCCompilerId.c
+      Link:
+        E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
+        CompilerIdC.vcxproj -> E:\\Git\\llm-over-sound\\build\\CMakeFiles\\3.26.4\\CompilerIdC\\CompilerIdC.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_C_COMPILER=E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
+      Done Building Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\3.26.4\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:01.71
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+      
+      The C compiler identification is MSVC, found in:
+        E:/Git/llm-over-sound/build/CMakeFiles/3.26.4/CompilerIdC/CompilerIdC.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.6.3+07e294721 for .NET Framework
+      Build started 12/12/2025 12:41:44 am.
+      
+      Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\3.26.4\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> E:\\Git\\llm-over-sound\\build\\CMakeFiles\\3.26.4\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\3.26.4\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:00.85
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        E:/Git/llm-over-sound/build/CMakeFiles/3.26.4/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-7xa3w0"
+      binary: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-7xa3w0"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-7xa3w0
+        
+        Run Build Command(s):E:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_9449f.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.6.3+07e294721 for .NET Framework
+        Build started 12/12/2025 12:41:46 am.
+        
+        Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-7xa3w0\\cmTC_9449f.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_9449f.dir\\Debug\\".
+          Creating directory "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-7xa3w0\\Debug\\".
+          Creating directory "cmTC_9449f.dir\\Debug\\cmTC_9449f.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_9449f.dir\\Debug\\cmTC_9449f.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_9449f.dir\\Debug\\\\" /Fd"cmTC_9449f.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.36.32534 for x64
+          CMakeCCompilerABI.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_9449f.dir\\Debug\\\\" /Fd"cmTC_9449f.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
+        Link:
+          E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-7xa3w0\\Debug\\cmTC_9449f.exe" /INCREMENTAL /ILK:"cmTC_9449f.dir\\Debug\\cmTC_9449f.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-7xa3w0/Debug/cmTC_9449f.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-7xa3w0/Debug/cmTC_9449f.lib" /MACHINE:X64  /machine:x64 cmTC_9449f.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_9449f.vcxproj -> E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-7xa3w0\\Debug\\cmTC_9449f.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_9449f.dir\\Debug\\cmTC_9449f.tlog\\unsuccessfulbuild".
+          Touching "cmTC_9449f.dir\\Debug\\cmTC_9449f.tlog\\cmTC_9449f.lastbuildstate".
+        Done Building Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-7xa3w0\\cmTC_9449f.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:01.13
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-a1cugc"
+      binary: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-a1cugc"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-a1cugc
+        
+        Run Build Command(s):E:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_16d0f.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.6.3+07e294721 for .NET Framework
+        Build started 12/12/2025 12:41:47 am.
+        
+        Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-a1cugc\\cmTC_16d0f.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_16d0f.dir\\Debug\\".
+          Creating directory "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-a1cugc\\Debug\\".
+          Creating directory "cmTC_16d0f.dir\\Debug\\cmTC_16d0f.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_16d0f.dir\\Debug\\cmTC_16d0f.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_16d0f.dir\\Debug\\\\" /Fd"cmTC_16d0f.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.36.32534 for x64
+          CMakeCXXCompilerABI.cpp
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_16d0f.dir\\Debug\\\\" /Fd"cmTC_16d0f.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
+        Link:
+          E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-a1cugc\\Debug\\cmTC_16d0f.exe" /INCREMENTAL /ILK:"cmTC_16d0f.dir\\Debug\\cmTC_16d0f.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-a1cugc/Debug/cmTC_16d0f.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-a1cugc/Debug/cmTC_16d0f.lib" /MACHINE:X64  /machine:x64 cmTC_16d0f.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_16d0f.vcxproj -> E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-a1cugc\\Debug\\cmTC_16d0f.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_16d0f.dir\\Debug\\cmTC_16d0f.tlog\\unsuccessfulbuild".
+          Touching "cmTC_16d0f.dir\\Debug\\cmTC_16d0f.tlog\\cmTC_16d0f.lastbuildstate".
+        Done Building Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-a1cugc\\cmTC_16d0f.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:01.08
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CheckCSourceCompiles.cmake:76 (cmake_check_source_compiles)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:97 (CHECK_C_SOURCE_COMPILES)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "examples/CMakeLists.txt:3 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-dnremx"
+      binary: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-dnremx"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-dnremx
+        
+        Run Build Command(s):E:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_01cbf.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.6.3+07e294721 for .NET Framework
+        Build started 12/12/2025 12:41:49 am.
+        
+        Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\cmTC_01cbf.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_01cbf.dir\\Debug\\".
+          Creating directory "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\Debug\\".
+          Creating directory "cmTC_01cbf.dir\\Debug\\cmTC_01cbf.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_01cbf.dir\\Debug\\cmTC_01cbf.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_01cbf.dir\\Debug\\\\" /Fd"cmTC_01cbf.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.36.32534 for x64
+          src.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_01cbf.dir\\Debug\\\\" /Fd"cmTC_01cbf.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\src.c"
+        E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\cmTC_01cbf.vcxproj]
+        Done Building Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\cmTC_01cbf.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\cmTC_01cbf.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dnremx\\cmTC_01cbf.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.41
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CheckLibraryExists.cmake:71 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "examples/CMakeLists.txt:3 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-zrdzga"
+      binary: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-zrdzga"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-zrdzga
+        
+        Run Build Command(s):E:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_08a26.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.6.3+07e294721 for .NET Framework
+        Build started 12/12/2025 12:41:50 am.
+        
+        Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zrdzga\\cmTC_08a26.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_08a26.dir\\Debug\\".
+          Creating directory "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zrdzga\\Debug\\".
+          Creating directory "cmTC_08a26.dir\\Debug\\cmTC_08a26.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_08a26.dir\\Debug\\cmTC_08a26.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_08a26.dir\\Debug\\\\" /Fd"cmTC_08a26.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zrdzga\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.36.32534 for x64
+          CheckFunctionExists.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_08a26.dir\\Debug\\\\" /Fd"cmTC_08a26.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zrdzga\\CheckFunctionExists.c"
+        Link:
+          E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zrdzga\\Debug\\cmTC_08a26.exe" /INCREMENTAL /ILK:"cmTC_08a26.dir\\Debug\\cmTC_08a26.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-zrdzga/Debug/cmTC_08a26.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-zrdzga/Debug/cmTC_08a26.lib" /MACHINE:X64  /machine:x64 cmTC_08a26.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zrdzga\\cmTC_08a26.vcxproj]
+        Done Building Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zrdzga\\cmTC_08a26.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zrdzga\\cmTC_08a26.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zrdzga\\cmTC_08a26.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.59
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/CheckLibraryExists.cmake:71 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "examples/CMakeLists.txt:3 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-aes2b1"
+      binary: "E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-aes2b1"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-aes2b1
+        
+        Run Build Command(s):E:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_883a8.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.6.3+07e294721 for .NET Framework
+        Build started 12/12/2025 12:41:50 am.
+        
+        Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-aes2b1\\cmTC_883a8.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_883a8.dir\\Debug\\".
+          Creating directory "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-aes2b1\\Debug\\".
+          Creating directory "cmTC_883a8.dir\\Debug\\cmTC_883a8.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_883a8.dir\\Debug\\cmTC_883a8.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_883a8.dir\\Debug\\\\" /Fd"cmTC_883a8.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-aes2b1\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.36.32534 for x64
+          CheckFunctionExists.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_883a8.dir\\Debug\\\\" /Fd"cmTC_883a8.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-aes2b1\\CheckFunctionExists.c"
+        Link:
+          E:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-aes2b1\\Debug\\cmTC_883a8.exe" /INCREMENTAL /ILK:"cmTC_883a8.dir\\Debug\\cmTC_883a8.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-aes2b1/Debug/cmTC_883a8.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/Git/llm-over-sound/build/CMakeFiles/CMakeScratch/TryCompile-aes2b1/Debug/cmTC_883a8.lib" /MACHINE:X64  /machine:x64 cmTC_883a8.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-aes2b1\\cmTC_883a8.vcxproj]
+        Done Building Project "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-aes2b1\\cmTC_883a8.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-aes2b1\\cmTC_883a8.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [E:\\Git\\llm-over-sound\\build\\CMakeFiles\\CMakeScratch\\TryCompile-aes2b1\\cmTC_883a8.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.52
+        
+      exitCode: 1
+...

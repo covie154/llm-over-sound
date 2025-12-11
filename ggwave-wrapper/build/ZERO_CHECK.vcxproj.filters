@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\Git\llm-over-sound\ggwave-wrapper\build\CMakeFiles\ff71c9b3beaa9ea0ab88f0da359329e6\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{1F3C98D2-06BB-376B-9759-02A34E9326BD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

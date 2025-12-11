@@ -1,0 +1,10 @@
+^E:\GIT\LLM-OVER-SOUND\GGWAVE-WRAPPER\BUILD\CMAKEFILES\FF71C9B3BEAA9EA0AB88F0DA359329E6\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/Git/llm-over-sound/ggwave-wrapper -BE:/Git/llm-over-sound/ggwave-wrapper/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file E:/Git/llm-over-sound/ggwave-wrapper/build/ggwave_simple.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,10 @@
+^E:\GIT\LLM-OVER-SOUND\GGWAVE-WRAPPER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/Git/llm-over-sound/ggwave-wrapper -BE:/Git/llm-over-sound/ggwave-wrapper/build --check-stamp-file E:/Git/llm-over-sound/ggwave-wrapper/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
