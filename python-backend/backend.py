@@ -7,6 +7,7 @@ Dummy Backend Server for AHK ggwave
 import sys
 import json
 import ggwave
+import sounddevice
 import pyaudio
 import logging
 import os

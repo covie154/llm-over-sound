@@ -1,0 +1,3 @@
+﻿[2026-01-22 22:25:49.736] [SESSION] Application started - Speaker: 1, Mic: 3
+[2026-01-22 22:25:56.163] [SEND_START] ID: gJ6UyG8 | Content: {"ct":"Testing testing testing","fn":"test","id":"gJ6UyG8"}
+[2026-01-22 22:26:00.307] [SEND_OK] ID: gJ6UyG8 | Transmission complete
