@@ -123,7 +123,7 @@ def main():
     
     log_session_start()
 
-    input_device_index = 4  # Change this to your input device index
+    input_device_index = 5  # Change this to your input device index
     stream_input = p.open(format=pyaudio.paFloat32, channels=1, rate=48000, input=True, input_device_index=input_device_index, frames_per_buffer=1024)
     stream_output = p.open(format=pyaudio.paFloat32, channels=1, rate=48000, output=True, frames_per_buffer=4096)
     instance = ggwave.init()
