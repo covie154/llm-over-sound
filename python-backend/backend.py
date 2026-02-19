@@ -6,6 +6,7 @@ Dummy Backend Server for AHK ggwave
 
 import sys
 import json
+import argparse
 import ggwave
 import sounddevice
 import pyaudio
@@ -72,6 +73,46 @@ def log_session_end(reason: str = "Normal"):
 p = pyaudio.PyAudio()
 
 
+def list_devices(p):
+    """List all available audio devices."""
+    print("\nAvailable Audio Devices:")
+    print("=" * 80)
+
+    device_count = p.get_device_count()
+    try:
+        default_input = p.get_default_input_device_info()['index']
+    except IOError:
+        default_input = None
+    try:
+        default_output = p.get_default_output_device_info()['index']
+    except IOError:
+        default_output = None
+
+    for i in range(device_count):
+        try:
+            info = p.get_device_info_by_index(i)
+            markers = []
+            if i == default_input:
+                markers.append("DEFAULT INPUT")
+            if i == default_output:
+                markers.append("DEFAULT OUTPUT")
+            marker_str = f" [{', '.join(markers)}]" if markers else ""
+
+            in_ch = info['maxInputChannels']
+            out_ch = info['maxOutputChannels']
+            if in_ch > 0 or out_ch > 0:
+                direction = []
+                if in_ch > 0:
+                    direction.append(f"In:{in_ch}")
+                if out_ch > 0:
+                    direction.append(f"Out:{out_ch}")
+                print(f"Device {i}: {info['name']}{marker_str}")
+                print(f"  Channels: {', '.join(direction)}  |  Sample Rate: {info['defaultSampleRate']:.0f} Hz")
+                print()
+        except Exception:
+            pass
+
+
 def process_input(message: str) -> dict:
     """
     Process the input message and return a response.
@@ -119,25 +160,94 @@ def process_input(message: str) -> dict:
     return response
 
 
+def parse_args():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description='ggwave backend server for AHK frontend.',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python backend.py
+  python backend.py -i 5 -o 3
+  python backend.py -i 5 -o 3 -v 80 -p 2
+  python backend.py -l
+        """
+    )
+
+    parser.add_argument(
+        '-i', '--input-device',
+        type=int,
+        default=None,
+        help='Input device index (default: system default)'
+    )
+    parser.add_argument(
+        '-o', '--output-device',
+        type=int,
+        default=None,
+        help='Output device index (default: system default)'
+    )
+    parser.add_argument(
+        '-v', '--volume',
+        type=int,
+        default=50,
+        help='Transmission volume level 0-100 (default: 50)'
+    )
+    parser.add_argument(
+        '-p', '--protocol',
+        type=int,
+        default=1,
+        help='ggwave protocol ID (default: 1 = Audible Fast)'
+    )
+    parser.add_argument(
+        '-l', '--list',
+        action='store_true',
+        help='List available audio devices and exit'
+    )
+
+    return parser.parse_args()
+
+
 def main():
     """Main loop - Listen for input from ggwave, then process and transmit response."""
     
+    args = parse_args()
+
+    # List devices if requested
+    if args.list:
+        list_devices(p)
+        p.terminate()
+        return
+
     log_session_start()
 
-    input_device_index = 5  # Change this to your input device index
-    stream_input = p.open(format=pyaudio.paFloat32, channels=1, rate=48000, input=True, input_device_index=input_device_index, frames_per_buffer=1024)
-    stream_output = p.open(format=pyaudio.paFloat32, channels=1, rate=48000, output=True, frames_per_buffer=4096)
-    instance = ggwave.init()
-    
-    info = p.get_host_api_info_by_index(0)
-    numdevices = info.get('deviceCount')
+    input_device_index = args.input_device
+    output_device_index = args.output_device
+    volume = args.volume
+    protocol_id = args.protocol
 
-    for i in range(0, numdevices):
-        if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
-            print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
-    
-    device_name = p.get_device_info_by_index(input_device_index).get('name')
-    logger.info(f"Initialized pyaudio input stream - Device: {input_device_index} ({device_name})")
+    # Build stream kwargs so None means "use system default"
+    input_kwargs = dict(format=pyaudio.paFloat32, channels=1, rate=48000, input=True, frames_per_buffer=1024)
+    if input_device_index is not None:
+        input_kwargs['input_device_index'] = input_device_index
+
+    output_kwargs = dict(format=pyaudio.paFloat32, channels=1, rate=48000, output=True, frames_per_buffer=4096)
+    if output_device_index is not None:
+        output_kwargs['output_device_index'] = output_device_index
+
+    stream_input = p.open(**input_kwargs)
+    stream_output = p.open(**output_kwargs)
+    instance = ggwave.init()
+
+    # Log resolved device info
+    in_name = p.get_device_info_by_index(
+        input_device_index if input_device_index is not None else p.get_default_input_device_info()['index']
+    ).get('name')
+    out_name = p.get_device_info_by_index(
+        output_device_index if output_device_index is not None else p.get_default_output_device_info()['index']
+    ).get('name')
+    logger.info(f"Input  device: {input_device_index or 'default'} ({in_name})")
+    logger.info(f"Output device: {output_device_index or 'default'} ({out_name})")
+    logger.info(f"Protocol: {protocol_id} | Volume: {volume}")
     
     while True:
         msg = ""    # Initialise the incoming message variable
@@ -163,7 +273,7 @@ def main():
                         logger.warning(f"[RECV_FAIL] ID: {msg_id} | Processing error: {response_dict.get('ct', '')}")
                     
                     # Transmit response via ggwave
-                    waveform = ggwave.encode(response, protocolId = 1, volume = 50)
+                    waveform = ggwave.encode(response, protocolId=protocol_id, volume=volume)
 
                     logger.info(f"[SEND_START] ID: {msg_id} | Content: {truncate_for_log(response)}")
                     stream_output.write(waveform, len(waveform)//4)
@@ -198,7 +308,7 @@ def main():
             response = json.dumps(response_dict)
             
             try:
-                waveform = ggwave.encode(response, protocolId = 1, volume = 50)
+                waveform = ggwave.encode(response, protocolId=protocol_id, volume=volume)
                 logger.info(f"[SEND_START] Error response | Content: {truncate_for_log(response)}")
                 stream_output.write(waveform, len(waveform)//4)
                 logger.info(f"[SEND_OK] Error response transmitted")
