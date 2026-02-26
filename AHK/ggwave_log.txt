@@ -1,3 +1,8 @@
 ﻿[2026-01-22 22:25:49.736] [SESSION] Application started - Speaker: 1, Mic: 3
 [2026-01-22 22:25:56.163] [SEND_START] ID: gJ6UyG8 | Content: {"ct":"Testing testing testing","fn":"test","id":"gJ6UyG8"}
 [2026-01-22 22:26:00.307] [SEND_OK] ID: gJ6UyG8 | Transmission complete
+[2026-02-19 23:17:55.154] [SESSION] Application started - Speaker: 1, Mic: 3
+[2026-02-19 23:18:00.777] [SEND_START] ID: 10DWxIV | Content: {"ct":"Hello World!","fn":"test","id":"10DWxIV"}
+[2026-02-19 23:18:04.362] [SEND_OK] ID: 10DWxIV | Transmission complete
+[2026-02-19 23:18:10.582] [RECV_RAW] Bytes: 88 | Raw: {"id": "10DWxIV", "st": "S", "ct": "Processed function test with content: Hello World!"}
+[2026-02-19 23:18:10.582] [RECV_OK] ID: 10DWxIV | Content: Processed function test with content: Hello World!
