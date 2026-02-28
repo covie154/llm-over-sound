@@ -314,6 +314,87 @@ static int pa_tx_callback(const void *input, void *output,
 }
 
 /* ================================================================
+ * FSK transmit path
+ * ================================================================ */
+
+/* Generate FSK waveform for one byte (1 start + 8 data LSB-first + 1 stop).
+ * Returns number of samples written. */
+static size_t fsk_encode_byte(float *buf, uint8_t byte) {
+    size_t pos = 0;
+
+    /* start bit = space */
+    pos += tone_generate(buf + pos, g_state.space_freq,
+                         g_state.bit_nsamples, SAMPLE_RATE);
+
+    /* 8 data bits, LSB first */
+    for (int i = 0; i < 8; i++) {
+        float freq = (byte & (1 << i)) ? g_state.mark_freq : g_state.space_freq;
+        pos += tone_generate(buf + pos, freq,
+                             g_state.bit_nsamples, SAMPLE_RATE);
+    }
+
+    /* stop bit = mark */
+    pos += tone_generate(buf + pos, g_state.mark_freq,
+                         g_state.bit_nsamples, SAMPLE_RATE);
+
+    return pos;
+}
+
+MINIMODEM_API int minimodem_simple_send(const uint8_t *data, int len) {
+    if (!g_state.stream_out || len <= 0 || !data) {
+        set_error("send: not initialized or invalid args");
+        return -1;
+    }
+
+    /* calculate total waveform size */
+    size_t total_bits = LEADER_BITS + (size_t)len * 10 + TRAILER_BITS;
+    size_t total_samples = total_bits * g_state.bit_nsamples;
+
+    float *waveform = malloc(total_samples * sizeof(float));
+    if (!waveform) {
+        set_error("send: malloc failed for %zu samples", total_samples);
+        return -1;
+    }
+
+    size_t pos = 0;
+
+    /* leader: mark tone */
+    pos += tone_generate(waveform + pos, g_state.mark_freq,
+                         g_state.bit_nsamples * LEADER_BITS, SAMPLE_RATE);
+
+    /* data bytes */
+    for (int i = 0; i < len; i++) {
+        pos += fsk_encode_byte(waveform + pos, data[i]);
+    }
+
+    /* trailer: mark tone */
+    pos += tone_generate(waveform + pos, g_state.mark_freq,
+                         g_state.bit_nsamples * TRAILER_BITS, SAMPLE_RATE);
+
+    /* queue to TX ring */
+    int avail = ring_available_write(g_state.tx_ring_head,
+                                     g_state.tx_ring_tail,
+                                     g_state.tx_ring_size);
+    if ((int)pos > avail) {
+        free(waveform);
+        set_error("send: TX ring full (%d avail, %zu needed)", avail, pos);
+        return -1;
+    }
+
+    ring_write(g_state.tx_ring, &g_state.tx_ring_head,
+               g_state.tx_ring_size, waveform, (int)pos);
+
+    free(waveform);
+    return 0;
+}
+
+MINIMODEM_API int minimodem_simple_is_transmitting(void) {
+    return ring_available_read(g_state.tx_ring_head,
+                               g_state.tx_ring_tail,
+                               g_state.tx_ring_size) > 0 ? 1 : 0;
+}
+
+/* ================================================================
  * Public API — Device enumeration
  * ================================================================ */
 
