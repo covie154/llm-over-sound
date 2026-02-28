@@ -4,13 +4,18 @@
  * A simplified DLL wrapper around minimodem FSK modem functionality,
  * providing a PortAudio-based send/receive interface.
  *
- * This file contains:
+ * This file contains the complete minimodem_simple DLL implementation:
  *   - Global state struct
  *   - FSK parameter calculation (ported from minimodem.c)
  *   - PortAudio device enumeration
+ *   - Ring buffer helpers
+ *   - PortAudio stream callbacks (TX / RX)
+ *   - FSK transmit path (send, is_transmitting)
+ *   - Message queue helpers
+ *   - FSK receive path (decoder thread, receive)
+ *   - Init, cleanup, set_baud_rate
  *   - Device enumeration API functions
- *
- * Transmit, receive, init, and cleanup are added in subsequent files/tasks.
+ *   - Error / frame_len helpers
  */
 
 /* --- Includes --- */
@@ -629,6 +634,203 @@ MINIMODEM_API int minimodem_simple_receive(uint8_t *buffer, int bufferSize) {
     free(node->data);
     free(node);
     return copy_len;
+}
+
+/* ================================================================
+ * Audio stream management (internal)
+ * ================================================================ */
+
+static int create_audio(int playbackId, int captureId) {
+    PaError err;
+
+    /* resolve device indices */
+    int pa_out = (playbackId >= 0 && playbackId < g_state.playback_count)
+                 ? g_state.playback_map[playbackId]
+                 : Pa_GetDefaultOutputDevice();
+    int pa_in  = (captureId >= 0 && captureId < g_state.capture_count)
+                 ? g_state.capture_map[captureId]
+                 : Pa_GetDefaultInputDevice();
+
+    if (pa_out == paNoDevice || pa_in == paNoDevice) {
+        set_error("init: no audio device available");
+        return -1;
+    }
+
+    /* output stream */
+    PaStreamParameters outParams;
+    memset(&outParams, 0, sizeof(outParams));
+    outParams.device = pa_out;
+    outParams.channelCount = 1;
+    outParams.sampleFormat = paFloat32;
+    outParams.suggestedLatency = Pa_GetDeviceInfo(pa_out)->defaultLowOutputLatency;
+
+    err = Pa_OpenStream(&g_state.stream_out, NULL, &outParams,
+                        SAMPLE_RATE, PA_FRAMES_PER_BUF, paClipOff,
+                        pa_tx_callback, NULL);
+    if (err != paNoError) {
+        set_error("init: Pa_OpenStream(out) failed: %s", Pa_GetErrorText(err));
+        return -1;
+    }
+
+    /* input stream */
+    PaStreamParameters inParams;
+    memset(&inParams, 0, sizeof(inParams));
+    inParams.device = pa_in;
+    inParams.channelCount = 1;
+    inParams.sampleFormat = paFloat32;
+    inParams.suggestedLatency = Pa_GetDeviceInfo(pa_in)->defaultLowInputLatency;
+
+    err = Pa_OpenStream(&g_state.stream_in, &inParams, NULL,
+                        SAMPLE_RATE, PA_FRAMES_PER_BUF, paClipOff,
+                        pa_rx_callback, NULL);
+    if (err != paNoError) {
+        set_error("init: Pa_OpenStream(in) failed: %s", Pa_GetErrorText(err));
+        Pa_CloseStream(g_state.stream_out);
+        g_state.stream_out = NULL;
+        return -1;
+    }
+
+    Pa_StartStream(g_state.stream_out);
+    Pa_StartStream(g_state.stream_in);
+    return 0;
+}
+
+static void destroy_audio(void) {
+    if (g_state.stream_out) {
+        Pa_StopStream(g_state.stream_out);
+        Pa_CloseStream(g_state.stream_out);
+        g_state.stream_out = NULL;
+    }
+    if (g_state.stream_in) {
+        Pa_StopStream(g_state.stream_in);
+        Pa_CloseStream(g_state.stream_in);
+        g_state.stream_in = NULL;
+    }
+}
+
+/* ================================================================
+ * Public API — Init / Cleanup / Set baud rate
+ * ================================================================ */
+
+MINIMODEM_API int minimodem_simple_init(int playbackDeviceId, int captureDeviceId, int baud_rate) {
+    /* Clear state but preserve PA initialization and device maps */
+    g_state.stream_out = NULL;
+    g_state.stream_in = NULL;
+    g_state.fskp = NULL;
+    g_state.tx_ring = NULL;
+    g_state.rx_ring = NULL;
+    g_state.msg_queue_head = NULL;
+    g_state.msg_queue_tail = NULL;
+    g_state.decoder_running = 0;
+    g_state.rx_state = RX_WAITING_FOR_CARRIER;
+    g_state.rx_msg_len = 0;
+    g_state.noconf_count = 0;
+    g_state.track_amplitude = 0.0f;
+    g_state.last_error[0] = '\0';
+
+    if (ensure_pa() < 0) return -1;
+
+    /* FSK parameters */
+    calc_fsk_params(baud_rate);
+
+    /* FSK decoder plan */
+    g_state.fskp = fsk_plan_new(SAMPLE_RATE, g_state.mark_freq,
+                                 g_state.space_freq, g_state.filter_bw);
+    if (!g_state.fskp) {
+        set_error("init: fsk_plan_new failed");
+        return -1;
+    }
+
+    /* tone generator */
+    tone_generator_init(TONE_TABLE_LEN, TONE_AMPLITUDE);
+
+    /* allocate ring buffers */
+    g_state.tx_ring_size = TX_RING_SIZE;
+    g_state.tx_ring = calloc(g_state.tx_ring_size, sizeof(float));
+    g_state.rx_ring_size = RX_RING_SIZE;
+    g_state.rx_ring = calloc(g_state.rx_ring_size, sizeof(float));
+
+    if (!g_state.tx_ring || !g_state.rx_ring) {
+        set_error("init: ring buffer allocation failed");
+        return -1;
+    }
+
+    g_state.tx_ring_head = 0;
+    g_state.tx_ring_tail = 0;
+    g_state.rx_ring_head = 0;
+    g_state.rx_ring_tail = 0;
+
+    /* message queue mutex */
+    pthread_mutex_init(&g_state.msg_mutex, NULL);
+
+    /* open audio streams */
+    if (create_audio(playbackDeviceId, captureDeviceId) < 0)
+        return -1;
+
+    /* start decoder thread */
+    g_state.decoder_running = 1;
+    if (pthread_create(&g_state.decoder_thread, NULL, decoder_thread_func, NULL) != 0) {
+        set_error("init: failed to create decoder thread");
+        destroy_audio();
+        return -1;
+    }
+
+    return 0;
+}
+
+MINIMODEM_API void minimodem_simple_cleanup(void) {
+    /* stop decoder thread */
+    if (g_state.decoder_running) {
+        g_state.decoder_running = 0;
+        pthread_join(g_state.decoder_thread, NULL);
+    }
+
+    /* stop audio */
+    destroy_audio();
+
+    /* free FSK plan */
+    if (g_state.fskp) {
+        fsk_plan_destroy(g_state.fskp);
+        g_state.fskp = NULL;
+    }
+
+    /* free ring buffers */
+    free(g_state.tx_ring);  g_state.tx_ring = NULL;
+    free(g_state.rx_ring);  g_state.rx_ring = NULL;
+
+    /* drain message queue */
+    msg_node_t *node;
+    while ((node = msg_queue_pop()) != NULL) {
+        free(node->data);
+        free(node);
+    }
+
+    pthread_mutex_destroy(&g_state.msg_mutex);
+
+    if (g_state.pa_initialized) {
+        Pa_Terminate();
+        g_state.pa_initialized = 0;
+    }
+}
+
+MINIMODEM_API int minimodem_simple_set_baud_rate(int baud_rate) {
+    if (!g_state.fskp) {
+        set_error("set_baud_rate: not initialized");
+        return -1;
+    }
+
+    calc_fsk_params(baud_rate);
+
+    fsk_plan_destroy(g_state.fskp);
+    g_state.fskp = fsk_plan_new(SAMPLE_RATE, g_state.mark_freq,
+                                 g_state.space_freq, g_state.filter_bw);
+    if (!g_state.fskp) {
+        set_error("set_baud_rate: fsk_plan_new failed");
+        return -1;
+    }
+
+    tone_reset_phase();
+    return 0;
 }
 
 /* ================================================================
