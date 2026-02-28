@@ -539,10 +539,8 @@ static void *decoder_thread_func(void *arg) {
                 case RX_RECEIVING:
                     g_state.noconf_count = 0;
 
-                    /* Track amplitude (running maximum) */
-                    if (ampl_out > g_state.track_amplitude) {
-                        g_state.track_amplitude = ampl_out;
-                    }
+                    /* Track amplitude (running average) */
+                    g_state.track_amplitude = (g_state.track_amplitude + ampl_out) / 2.0f;
 
                     /* Store decoded byte if room */
                     if (g_state.rx_msg_len < MAX_MESSAGE_LEN) {
@@ -690,8 +688,23 @@ static int create_audio(int playbackId, int captureId) {
         return -1;
     }
 
-    Pa_StartStream(g_state.stream_out);
-    Pa_StartStream(g_state.stream_in);
+    err = Pa_StartStream(g_state.stream_out);
+    if (err != paNoError) {
+        set_error("init: Pa_StartStream(out) failed: %s", Pa_GetErrorText(err));
+        Pa_CloseStream(g_state.stream_in);   g_state.stream_in = NULL;
+        Pa_CloseStream(g_state.stream_out);  g_state.stream_out = NULL;
+        return -1;
+    }
+
+    err = Pa_StartStream(g_state.stream_in);
+    if (err != paNoError) {
+        set_error("init: Pa_StartStream(in) failed: %s", Pa_GetErrorText(err));
+        Pa_StopStream(g_state.stream_out);
+        Pa_CloseStream(g_state.stream_in);   g_state.stream_in = NULL;
+        Pa_CloseStream(g_state.stream_out);  g_state.stream_out = NULL;
+        return -1;
+    }
+
     return 0;
 }
 
@@ -752,6 +765,9 @@ MINIMODEM_API int minimodem_simple_init(int playbackDeviceId, int captureDeviceI
 
     if (!g_state.tx_ring || !g_state.rx_ring) {
         set_error("init: ring buffer allocation failed");
+        free(g_state.tx_ring);  g_state.tx_ring = NULL;
+        free(g_state.rx_ring);  g_state.rx_ring = NULL;
+        fsk_plan_destroy(g_state.fskp);  g_state.fskp = NULL;
         return -1;
     }
 
@@ -764,14 +780,21 @@ MINIMODEM_API int minimodem_simple_init(int playbackDeviceId, int captureDeviceI
     pthread_mutex_init(&g_state.msg_mutex, NULL);
 
     /* open audio streams */
-    if (create_audio(playbackDeviceId, captureDeviceId) < 0)
+    if (create_audio(playbackDeviceId, captureDeviceId) < 0) {
+        free(g_state.tx_ring);  g_state.tx_ring = NULL;
+        free(g_state.rx_ring);  g_state.rx_ring = NULL;
+        fsk_plan_destroy(g_state.fskp);  g_state.fskp = NULL;
         return -1;
+    }
 
     /* start decoder thread */
     g_state.decoder_running = 1;
     if (pthread_create(&g_state.decoder_thread, NULL, decoder_thread_func, NULL) != 0) {
         set_error("init: failed to create decoder thread");
         destroy_audio();
+        free(g_state.tx_ring);  g_state.tx_ring = NULL;
+        free(g_state.rx_ring);  g_state.rx_ring = NULL;
+        fsk_plan_destroy(g_state.fskp);  g_state.fskp = NULL;
         return -1;
     }
 
@@ -819,6 +842,13 @@ MINIMODEM_API int minimodem_simple_set_baud_rate(int baud_rate) {
         return -1;
     }
 
+    /* stop decoder thread while we modify shared state */
+    int was_running = g_state.decoder_running;
+    if (was_running) {
+        g_state.decoder_running = 0;
+        pthread_join(g_state.decoder_thread, NULL);
+    }
+
     calc_fsk_params(baud_rate);
 
     fsk_plan_destroy(g_state.fskp);
@@ -830,6 +860,19 @@ MINIMODEM_API int minimodem_simple_set_baud_rate(int baud_rate) {
     }
 
     tone_reset_phase();
+
+    /* restart decoder thread */
+    if (was_running) {
+        g_state.decoder_running = 1;
+        g_state.rx_state = RX_WAITING_FOR_CARRIER;
+        g_state.rx_msg_len = 0;
+        g_state.noconf_count = 0;
+        if (pthread_create(&g_state.decoder_thread, NULL, decoder_thread_func, NULL) != 0) {
+            set_error("set_baud_rate: failed to restart decoder thread");
+            return -1;
+        }
+    }
+
     return 0;
 }
 
