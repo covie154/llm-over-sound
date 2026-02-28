@@ -230,6 +230,90 @@ static int ensure_pa(void) {
 }
 
 /* ================================================================
+ * Ring buffer helpers (single-producer single-consumer lock-free)
+ * ================================================================ */
+
+static int ring_available_read(volatile int head, volatile int tail, int size) {
+    int avail = head - tail;
+    if (avail < 0) avail += size;
+    return avail;
+}
+
+static int ring_available_write(volatile int head, volatile int tail, int size) {
+    return size - 1 - ring_available_read(head, tail, size);
+}
+
+static void ring_write(float *ring, volatile int *head, int size,
+                       const float *data, int count) {
+    int h = *head;
+    for (int i = 0; i < count; i++) {
+        ring[h] = data[i];
+        h = (h + 1) % size;
+    }
+    *head = h;
+}
+
+static void ring_read(float *ring, volatile int *tail, int size,
+                      float *data, int count) {
+    int t = *tail;
+    for (int i = 0; i < count; i++) {
+        data[i] = ring[t];
+        t = (t + 1) % size;
+    }
+    *tail = t;
+}
+
+/* ================================================================
+ * PortAudio stream callbacks
+ * ================================================================ */
+
+/* RX callback: capture audio -> RX ring buffer */
+static int pa_rx_callback(const void *input, void *output,
+                          unsigned long frameCount,
+                          const PaStreamCallbackTimeInfo *timeInfo,
+                          PaStreamCallbackFlags statusFlags,
+                          void *userData) {
+    (void)output; (void)timeInfo; (void)statusFlags; (void)userData;
+    const float *in = (const float *)input;
+    if (!in) return paContinue;
+
+    int avail = ring_available_write(g_state.rx_ring_head,
+                                     g_state.rx_ring_tail,
+                                     g_state.rx_ring_size);
+    int to_write = (int)frameCount < avail ? (int)frameCount : avail;
+    if (to_write > 0) {
+        ring_write(g_state.rx_ring, &g_state.rx_ring_head,
+                   g_state.rx_ring_size, in, to_write);
+    }
+    return paContinue;
+}
+
+/* TX callback: TX ring buffer -> playback audio */
+static int pa_tx_callback(const void *input, void *output,
+                          unsigned long frameCount,
+                          const PaStreamCallbackTimeInfo *timeInfo,
+                          PaStreamCallbackFlags statusFlags,
+                          void *userData) {
+    (void)input; (void)timeInfo; (void)statusFlags; (void)userData;
+    float *out = (float *)output;
+
+    int avail = ring_available_read(g_state.tx_ring_head,
+                                    g_state.tx_ring_tail,
+                                    g_state.tx_ring_size);
+    int to_read = (int)frameCount < avail ? (int)frameCount : avail;
+
+    if (to_read > 0) {
+        ring_read(g_state.tx_ring, &g_state.tx_ring_tail,
+                  g_state.tx_ring_size, out, to_read);
+    }
+    /* silence for remaining frames */
+    if (to_read < (int)frameCount) {
+        memset(out + to_read, 0, ((int)frameCount - to_read) * sizeof(float));
+    }
+    return paContinue;
+}
+
+/* ================================================================
  * Public API — Device enumeration
  * ================================================================ */
 
