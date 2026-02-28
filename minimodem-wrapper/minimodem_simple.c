@@ -395,6 +395,243 @@ MINIMODEM_API int minimodem_simple_is_transmitting(void) {
 }
 
 /* ================================================================
+ * Message queue helpers
+ * ================================================================ */
+
+static void msg_queue_push(const uint8_t *data, int len) {
+    msg_node_t *node = malloc(sizeof(msg_node_t));
+    if (!node) return;
+    node->data = malloc(len);
+    if (!node->data) { free(node); return; }
+    memcpy(node->data, data, len);
+    node->len = len;
+    node->next = NULL;
+
+    pthread_mutex_lock(&g_state.msg_mutex);
+    if (g_state.msg_queue_tail) {
+        g_state.msg_queue_tail->next = node;
+    } else {
+        g_state.msg_queue_head = node;
+    }
+    g_state.msg_queue_tail = node;
+    pthread_mutex_unlock(&g_state.msg_mutex);
+}
+
+static msg_node_t *msg_queue_pop(void) {
+    pthread_mutex_lock(&g_state.msg_mutex);
+    msg_node_t *node = g_state.msg_queue_head;
+    if (node) {
+        g_state.msg_queue_head = node->next;
+        if (!g_state.msg_queue_head) g_state.msg_queue_tail = NULL;
+    }
+    pthread_mutex_unlock(&g_state.msg_mutex);
+    return node;
+}
+
+/* ================================================================
+ * FSK receive path — decoder thread
+ * ================================================================ */
+
+/* 8N1 framing: start=0, 8 data bits=d, stop=1 */
+static const char *EXPECT_BITS_STRING = "0dddddddd1";
+
+static void *decoder_thread_func(void *arg) {
+    (void)arg;
+
+    /*
+     * Working buffer: 4x frame_nsamples gives enough room to search
+     * for a frame start within the buffer while keeping decoded frames
+     * contiguous.
+     */
+    unsigned int frame_ns = g_state.frame_nsamples;
+    unsigned int work_buf_size = frame_ns * 4;
+    float *work_buf = calloc(work_buf_size, sizeof(float));
+    if (!work_buf) return NULL;
+
+    unsigned int work_buf_len = 0;   /* number of valid samples in work_buf */
+
+    /*
+     * Overscan: fsk_find_frame searches a window within the buffer.
+     * try_max_nsamples is the search window (one bit period).
+     * try_step_nsamples is 1 for sample-accurate detection.
+     */
+    unsigned int bit_ns = g_state.bit_nsamples;
+    unsigned int try_max_nsamples = bit_ns;
+    unsigned int try_step_nsamples = 1;
+    /* Confidence limit: stop searching once we find a frame at this threshold */
+    float confidence_search_limit = CONFIDENCE_THRESHOLD;
+
+    while (g_state.decoder_running) {
+        /* --- Pull samples from RX ring buffer into working buffer --- */
+        int rx_avail = ring_available_read(g_state.rx_ring_head,
+                                           g_state.rx_ring_tail,
+                                           g_state.rx_ring_size);
+
+        if (rx_avail == 0) {
+            Pa_Sleep(1);
+            continue;
+        }
+
+        /* Limit to what fits in the working buffer */
+        unsigned int space = work_buf_size - work_buf_len;
+        if (space == 0) {
+            /*
+             * Working buffer full but no frame found — this shouldn't happen
+             * in normal operation. Discard the oldest frame's worth of samples
+             * to make room.
+             */
+            unsigned int discard = frame_ns;
+            if (discard > work_buf_len) discard = work_buf_len;
+            memmove(work_buf, work_buf + discard,
+                    (work_buf_len - discard) * sizeof(float));
+            work_buf_len -= discard;
+            space = work_buf_size - work_buf_len;
+        }
+
+        int to_read = rx_avail < (int)space ? rx_avail : (int)space;
+        ring_read(g_state.rx_ring, &g_state.rx_ring_tail,
+                  g_state.rx_ring_size, work_buf + work_buf_len, to_read);
+        work_buf_len += (unsigned int)to_read;
+
+        /* --- Process frames from the working buffer --- */
+        while (work_buf_len >= frame_ns + try_max_nsamples) {
+            if (!g_state.decoder_running) break;
+
+            unsigned long long bits_out = 0;
+            float ampl_out = 0.0f;
+            unsigned int frame_start_out = 0;
+
+            float confidence = fsk_find_frame(
+                g_state.fskp,
+                work_buf,
+                frame_ns,
+                0,                          /* try_first_sample */
+                try_max_nsamples,           /* try_max_nsamples */
+                try_step_nsamples,          /* try_step_nsamples */
+                confidence_search_limit,    /* try_confidence_search_limit */
+                EXPECT_BITS_STRING,
+                &bits_out,
+                &ampl_out,
+                &frame_start_out
+            );
+
+            if (confidence >= CONFIDENCE_THRESHOLD) {
+                /* --- Good frame decoded --- */
+
+                /* Extract byte: strip start bit (bit 0) with right-shift,
+                 * mask to 8 bits */
+                uint8_t decoded_byte = (uint8_t)((bits_out >> 1) & 0xFF);
+
+                switch (g_state.rx_state) {
+                case RX_WAITING_FOR_CARRIER:
+                    /* Carrier detected — transition to receiving */
+                    g_state.rx_state = RX_RECEIVING;
+                    g_state.noconf_count = 0;
+                    g_state.track_amplitude = ampl_out;
+                    g_state.rx_msg_len = 0;
+                    /* fall through to store byte */
+
+                case RX_RECEIVING:
+                    g_state.noconf_count = 0;
+
+                    /* Track amplitude (running maximum) */
+                    if (ampl_out > g_state.track_amplitude) {
+                        g_state.track_amplitude = ampl_out;
+                    }
+
+                    /* Store decoded byte if room */
+                    if (g_state.rx_msg_len < MAX_MESSAGE_LEN) {
+                        g_state.rx_msg_buf[g_state.rx_msg_len++] = decoded_byte;
+                    }
+                    /* else: message too long, drop byte silently */
+                    break;
+                }
+
+                /* Advance past the decoded frame.
+                 * The frame was found at frame_start_out within the buffer.
+                 * We advance by frame_start + frame_nsamples, minus the
+                 * overscan (try_max) which will be re-searched next iteration.
+                 */
+                unsigned int advance = frame_start_out + frame_ns;
+                if (advance > try_max_nsamples) {
+                    advance -= try_max_nsamples;
+                } else {
+                    /* Minimum advance of 1 to prevent infinite loop */
+                    advance = 1;
+                }
+                if (advance > work_buf_len) advance = work_buf_len;
+                memmove(work_buf, work_buf + advance,
+                        (work_buf_len - advance) * sizeof(float));
+                work_buf_len -= advance;
+
+            } else {
+                /* --- Low confidence: no valid frame found --- */
+
+                if (g_state.rx_state == RX_RECEIVING) {
+                    g_state.noconf_count++;
+
+                    /* Check for amplitude drop (carrier loss) */
+                    int amplitude_drop = (g_state.track_amplitude > 0.0f &&
+                                          ampl_out < g_state.track_amplitude * 0.25f);
+
+                    if (g_state.noconf_count >= MAX_NOCONF_BITS || amplitude_drop) {
+                        /* Carrier lost — push completed message to queue */
+                        if (g_state.rx_msg_len > 0) {
+                            msg_queue_push(g_state.rx_msg_buf,
+                                           g_state.rx_msg_len);
+                        }
+                        /* Reset state */
+                        g_state.rx_state = RX_WAITING_FOR_CARRIER;
+                        g_state.rx_msg_len = 0;
+                        g_state.noconf_count = 0;
+                        g_state.track_amplitude = 0.0f;
+                    }
+                }
+
+                /* Advance by try_max to scan ahead past this region */
+                unsigned int advance = try_max_nsamples;
+                if (advance == 0) advance = 1;
+                if (advance > work_buf_len) advance = work_buf_len;
+                memmove(work_buf, work_buf + advance,
+                        (work_buf_len - advance) * sizeof(float));
+                work_buf_len -= advance;
+            }
+        }
+    }
+
+    /*
+     * Thread shutting down — if we were mid-message, push whatever we have
+     * so the caller can retrieve it.
+     */
+    if (g_state.rx_state == RX_RECEIVING && g_state.rx_msg_len > 0) {
+        msg_queue_push(g_state.rx_msg_buf, g_state.rx_msg_len);
+        g_state.rx_state = RX_WAITING_FOR_CARRIER;
+        g_state.rx_msg_len = 0;
+    }
+
+    free(work_buf);
+    return NULL;
+}
+
+/* ================================================================
+ * Public API — Receive
+ * ================================================================ */
+
+MINIMODEM_API int minimodem_simple_receive(uint8_t *buffer, int bufferSize) {
+    if (!buffer || bufferSize <= 0) return 0;
+
+    msg_node_t *node = msg_queue_pop();
+    if (!node) return 0;
+
+    int copy_len = node->len < bufferSize ? node->len : bufferSize;
+    memcpy(buffer, node->data, copy_len);
+
+    free(node->data);
+    free(node);
+    return copy_len;
+}
+
+/* ================================================================
  * Public API — Device enumeration
  * ================================================================ */
 
