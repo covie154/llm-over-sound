@@ -1,11 +1,8 @@
 ; ==================== Global Configuration ====================
-; Shared constants and global variables for the ggwave AHK frontend.
+; Shared constants and global variables for the minimodem AHK frontend.
 #Requires AutoHotkey v2.0
 
 ; ==================== Global Variables ====================
-global ggwaveDll := ""
-global selectedSpeakerIndex := 0
-global selectedMicrophoneIndex := 0
 global isInitialized := false
 global messageCounter := 0  ; For additional uniqueness
 
@@ -13,9 +10,10 @@ global messageCounter := 0  ; For additional uniqueness
 global COMPRESSION_THRESHOLD := 100  ; Only compress messages longer than this (in characters)
 global COMPRESSION_ENGINE := 2       ; COMPRESSION_FORMAT_LZNT1=2, COMPRESSION_FORMAT_XPRESS=3, COMPRESSION_FORMAT_XPRESS_HUFF=4
 
-; ==================== Chunking Configuration ====================
-global GGWAVE_PAYLOAD_LIMIT := 140   ; Max bytes per ggwave transmission
-global CHUNK_DATA_SIZE := 70          ; Max base64 content chars per chunk
+; ==================== Minimodem Transport Configuration ====================
+global BAUD_RATE := 1200              ; FSK baud rate (Bell 202)
+global MAX_PAYLOAD_SIZE := 4096       ; Max bytes per send() — minimodem has no per-frame limit
+global CHUNK_DATA_SIZE := 1500        ; Max base64 content chars per chunk (~few hundred words)
 global INTER_CHUNK_DELAY := 200       ; Milliseconds between chunk transmissions
 global CHUNK_REASSEMBLY_TIMEOUT := 30000  ; Milliseconds before requesting retransmission
 
