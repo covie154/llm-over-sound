@@ -16,7 +16,7 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 
-logger = logging.getLogger("ggwave_backend")
+logger = logging.getLogger("minimodem_backend")
 
 
 # ---------------------------------------------------------------------------

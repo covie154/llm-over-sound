@@ -1,18 +1,16 @@
 """
-Message chunking, reassembly, and retransmission for the ggwave audio channel.
+Message chunking, reassembly, and retransmission for the minimodem audio channel.
 """
 
 import base64
 import json
 import time
 
-import ggwave
-
 from .config import (
     CHUNK_DATA_SIZE,
     CHUNK_REASSEMBLY_TIMEOUT,
     COMPRESSION_THRESHOLD,
-    GGWAVE_PAYLOAD_LIMIT,
+    MAX_PAYLOAD_SIZE,
     INTER_CHUNK_DELAY,
     logger,
     truncate_for_log,
@@ -54,7 +52,7 @@ def chunk_message(msg_dict: dict) -> list[str]:
     single.pop("z", None)  # Remove legacy compression flag
     single_json = json.dumps(single, separators=(",", ":"))
 
-    if len(content) < COMPRESSION_THRESHOLD and len(single_json) <= GGWAVE_PAYLOAD_LIMIT:
+    if len(content) < COMPRESSION_THRESHOLD and len(single_json) <= MAX_PAYLOAD_SIZE:
         logger.debug(f"[CHUNK] ID: {msg_id} | Single frame ({len(single_json)} bytes)")
         return [single_json]
 
@@ -83,10 +81,10 @@ def chunk_message(msg_dict: dict) -> list[str]:
         chunk["ct"] = data
         chunk_json = json.dumps(chunk, separators=(",", ":"))
 
-        if len(chunk_json) > GGWAVE_PAYLOAD_LIMIT:
+        if len(chunk_json) > MAX_PAYLOAD_SIZE:
             logger.warning(
                 f"[CHUNK] ID: {msg_id} | Chunk {ci}/{cc} is {len(chunk_json)} bytes "
-                f"(limit {GGWAVE_PAYLOAD_LIMIT}). Payload may be truncated."
+                f"(limit {MAX_PAYLOAD_SIZE}). Payload may be truncated."
             )
 
         result.append(chunk_json)
@@ -224,20 +222,19 @@ def check_chunk_timeouts() -> list[dict]:
 # Sending
 # ---------------------------------------------------------------------------
 
-def send_chunks(chunks: list[str], stream_output, protocol_id: int, volume: int, msg_id: str = ""):
-    """Transmit a list of chunk JSON strings sequentially via ggwave."""
+def send_chunks(chunks: list[str], transport, msg_id: str = ""):
+    """Transmit a list of chunk JSON strings sequentially via transport."""
     global last_sent_chunks
 
     if msg_id:
         last_sent_chunks[msg_id] = chunks
 
     for i, chunk_json in enumerate(chunks):
-        waveform = ggwave.encode(chunk_json, protocolId=protocol_id, volume=volume)
         logger.info(
             f"[SEND] ID: {msg_id} | Chunk {i + 1}/{len(chunks)} | "
             f"Content: {truncate_for_log(chunk_json)}"
         )
-        stream_output.write(waveform, len(waveform) // 4)
+        transport.send(chunk_json)
 
         if i < len(chunks) - 1:
             time.sleep(INTER_CHUNK_DELAY)
@@ -245,7 +242,7 @@ def send_chunks(chunks: list[str], stream_output, protocol_id: int, volume: int,
     logger.info(f"[SEND_OK] ID: {msg_id} | All {len(chunks)} chunk(s) transmitted")
 
 
-def handle_retransmission_request(retx_dict: dict, stream_output, protocol_id: int, volume: int):
+def handle_retransmission_request(retx_dict: dict, transport):
     """Handle a retransmission request by resending the requested chunks."""
     msg_id = retx_dict.get("id", "")
     requested = retx_dict.get("ci", [])
@@ -259,8 +256,7 @@ def handle_retransmission_request(retx_dict: dict, stream_output, protocol_id: i
     for ci in requested:
         if isinstance(ci, int) and 0 <= ci < len(stored_chunks):
             logger.info(f"[RETX] ID: {msg_id} | Resending chunk {ci}")
-            waveform = ggwave.encode(stored_chunks[ci], protocolId=protocol_id, volume=volume)
-            stream_output.write(waveform, len(waveform) // 4)
+            transport.send(stored_chunks[ci])
             time.sleep(INTER_CHUNK_DELAY)
         else:
             logger.warning(f"[RETX] ID: {msg_id} | Chunk {ci} out of range (have {len(stored_chunks)})")

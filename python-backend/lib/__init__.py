@@ -1,5 +1,5 @@
 """
-lib — shared modules for the ggwave radiology backend.
+lib — shared modules for the minimodem radiology backend.
 """
 
 from .config import logger, truncate_for_log, log_session_start, log_session_end
@@ -12,6 +12,7 @@ from .chunking import (
     handle_retransmission_request,
 )
 from .audio import list_devices
+from .transport import MinimodemTransport
 from .pipeline import ReportPipeline, TestPipeline, LLMPipeline
 
 __all__ = [
@@ -31,6 +32,8 @@ __all__ = [
     "handle_retransmission_request",
     # audio
     "list_devices",
+    # transport
+    "MinimodemTransport",
     # pipeline
     "ReportPipeline",
     "TestPipeline",
