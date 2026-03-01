@@ -3,11 +3,11 @@
 #Requires AutoHotkey v2.0
 
 SelectAudioDevices() {
-    global selectedSpeakerIndex, selectedMicrophoneIndex
-    
+    global selectedSpeakerIndex, selectedMicrophoneIndex, selectedBaudRate
+
     ; Get device counts
-    playbackCount := DllCall("ggwave_simple\ggwave_simple_get_playback_device_count", "Int")
-    captureCount := DllCall("ggwave_simple\ggwave_simple_get_capture_device_count", "Int")
+    playbackCount := DllCall("minimodem_simple\minimodem_simple_get_playback_device_count", "Int")
+    captureCount := DllCall("minimodem_simple\minimodem_simple_get_capture_device_count", "Int")
     
     if (playbackCount <= 0) {
         MsgBox("No playback devices found!", "Error", "Icon!")
@@ -22,8 +22,8 @@ SelectAudioDevices() {
     ; Get device names
     speakerNames := []
     Loop playbackCount {
-        namePtr := DllCall("ggwave_simple\ggwave_simple_get_playback_device_name", 
-            "Int", A_Index - 1, 
+        namePtr := DllCall("minimodem_simple\minimodem_simple_get_playback_device_name",
+            "Int", A_Index - 1,
             "Ptr")
         if (namePtr) {
             speakerNames.Push(StrGet(namePtr, "UTF-8"))
@@ -32,8 +32,8 @@ SelectAudioDevices() {
     
     micNames := []
     Loop captureCount {
-        namePtr := DllCall("ggwave_simple\ggwave_simple_get_capture_device_name", 
-            "Int", A_Index - 1, 
+        namePtr := DllCall("minimodem_simple\minimodem_simple_get_capture_device_name",
+            "Int", A_Index - 1,
             "Ptr")
         if (namePtr) {
             micNames.Push(StrGet(namePtr, "UTF-8"))
@@ -54,11 +54,12 @@ SelectAudioDevices() {
     micList := deviceGui.AddListBox("xm w400 h120 vMicrophoneChoice", micNames)
     micList.Choose(1)
     
-    ; Protocol selection
-    deviceGui.AddText("xm y+15", "Select Protocol:")
-    protocols := ["Audible Normal", "Audible Fast", "Audible Fastest", 
-                  "Ultrasound Normal", "Ultrasound Fast", "Ultrasound Fastest"]
-    protocolList := deviceGui.AddDropDownList("xm w400 vProtocolChoice Choose2", protocols)
+    ; Baud rate selector (replaces protocol dropdown)
+    deviceGui.AddText("xm y+15", "Baud Rate:")
+    baudRateDropdown := deviceGui.AddDropDownList("xm y+5 w380 vBaudRate Choose1",
+        ["1200 (Bell 202 - Conservative)",
+         "2400 (Balanced)",
+         "4800 (Fast)"])
     
     ; Buttons
     deviceGui.AddButton("xm y+20 w100", "OK").OnEvent("Click", OnOK)
@@ -70,6 +71,18 @@ SelectAudioDevices() {
         dialogResult := true
         selectedSpeakerIndex := speakerList.Value - 1
         selectedMicrophoneIndex := micList.Value - 1
+
+        ; Extract baud rate from selection
+        baudStr := baudRateDropdown.Text
+        if InStr(baudStr, "1200")
+            selectedBaudRate := 1200
+        else if InStr(baudStr, "2400")
+            selectedBaudRate := 2400
+        else if InStr(baudStr, "4800")
+            selectedBaudRate := 4800
+        else
+            selectedBaudRate := BAUD_RATE  ; from config.ahk
+
         deviceGui.Destroy()
     }
     
@@ -88,7 +101,7 @@ SelectAudioDevices() {
 
 GetMultilineInput() {
     ; Create a GUI for multiline text input
-    inputGui := Gui("+AlwaysOnTop +Resize +MinSize400x300", "ggwave - Send Message")
+    inputGui := Gui("+AlwaysOnTop +Resize +MinSize400x300", "minimodem - Send Message")
     inputGui.SetFont("s10")
     
     inputGui.AddText("xm", "Enter your message to send via audio:")
