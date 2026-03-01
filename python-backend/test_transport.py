@@ -132,9 +132,10 @@ def main():
                 '{"id":"M3","fn":"ping","ct":"third"}',
             ]
 
-            # Drain any leftover data in the queue
-            while transport.receive(timeout=0.2) is not None:
-                pass
+            # Drain any leftover data in the queue (bounded to prevent infinite loop)
+            for _ in range(50):
+                if transport.receive(timeout=0.2) is None:
+                    break
 
             for msg in messages:
                 transport.send(msg)
