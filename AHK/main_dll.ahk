@@ -114,76 +114,89 @@ PollReceive() {
     bytesReceived := DllCall("minimodem_simple\minimodem_simple_receive", "Ptr", recvBuf, "Int", recvBuf.Size, "Int")
 
     if (bytesReceived > 0) {
-        message := StrGet(recvBuf, bytesReceived, "UTF-8")
-        LogMessage("RECV_RAW", "Bytes: " . bytesReceived . " | Raw: " . TruncateForLog(message))
+        rawData := StrGet(recvBuf, bytesReceived, "UTF-8")
+        LogMessage("RECV_RAW", "Bytes: " . bytesReceived . " | Raw: " . TruncateForLog(rawData))
 
-        try {
-            chunkDict := Jxon_Load(&message)
-
-            ; Handle retransmission request from backend
-            if (chunkDict.Has("fn") && chunkDict["fn"] == "retx") {
-                HandleRetransmissionRequest(chunkDict)
-                return
-            }
-
-            ; Get ci/cc
-            ci := chunkDict.Has("ci") ? chunkDict["ci"] : 0
-            cc := chunkDict.Has("cc") ? chunkDict["cc"] : 0
-
-            ; Single message (no chunking)
-            if (cc == 0) {
-                completeMsg := Map()
-                for key, val in chunkDict {
-                    if (key != "ci" && key != "cc") {
-                        completeMsg[key] := val
-                    }
-                }
-                HandleCompleteMessage(completeMsg)
-                return
-            }
-
-            ; Chunked message - buffer the chunk
-            msgID := chunkDict.Has("id") ? chunkDict["id"] : ""
-
-            if (!chunkReceiveBuffer.Has(msgID)) {
-                chunkReceiveBuffer[msgID] := Map(
-                    "chunks", Map(),
-                    "cc", cc,
-                    "meta", Map(),
-                    "timestamp", A_TickCount
-                )
-            }
-
-            buf := chunkReceiveBuffer[msgID]
-            buf["chunks"][ci] := chunkDict.Has("ct") ? chunkDict["ct"] : ""
-
-            ; Store metadata from first chunk
-            if (ci == 0) {
-                for key, val in chunkDict {
-                    if (key != "id" && key != "ci" && key != "cc" && key != "ct") {
-                        buf["meta"][key] := val
-                    }
-                }
-            }
-
-            LogMessage("CHUNK_RECV", "ID: " . msgID . " | Chunk " . (ci + 1) . "/" . cc
-                . " | Have " . buf["chunks"].Count . "/" . cc)
-
-            ; Check if all chunks received
-            if (buf["chunks"].Count == cc) {
-                completeMsg := ReassembleChunks(msgID)
-                if (completeMsg) {
-                    HandleCompleteMessage(completeMsg)
-                }
-            }
-
-        } catch as e {
-            LogMessage("RECV_FAIL", "Error: " . e.Message . " | Raw: " . TruncateForLog(StrGet(recvBuf, bytesReceived, "UTF-8")))
+        ; Split on newlines — minimodem may deliver multiple chunks per receive()
+        messages := StrSplit(rawData, "`n")
+        for message in messages {
+            message := Trim(message)
+            if (message == "")
+                continue
+            ProcessReceivedMessage(message)
         }
     }
 
-    ; Periodically check for chunk reassembly timeouts
+    ; Check for chunk reassembly timeouts
     CheckChunkTimeouts()
+}
+
+ProcessReceivedMessage(message) {
+    global chunkReceiveBuffer, lastSentChunks
+
+    try {
+        chunkDict := Jxon_Load(&message)
+
+        ; Handle retransmission request from backend
+        if (chunkDict.Has("fn") && chunkDict["fn"] == "retx") {
+            HandleRetransmissionRequest(chunkDict)
+            return
+        }
+
+        ; Get ci/cc
+        ci := chunkDict.Has("ci") ? chunkDict["ci"] : 0
+        cc := chunkDict.Has("cc") ? chunkDict["cc"] : 0
+
+        ; Single message (no chunking)
+        if (cc == 0) {
+            completeMsg := Map()
+            for key, val in chunkDict {
+                if (key != "ci" && key != "cc") {
+                    completeMsg[key] := val
+                }
+            }
+            HandleCompleteMessage(completeMsg)
+            return
+        }
+
+        ; Chunked message - buffer the chunk
+        msgID := chunkDict.Has("id") ? chunkDict["id"] : ""
+
+        if (!chunkReceiveBuffer.Has(msgID)) {
+            chunkReceiveBuffer[msgID] := Map(
+                "chunks", Map(),
+                "cc", cc,
+                "meta", Map(),
+                "timestamp", A_TickCount
+            )
+        }
+
+        buf := chunkReceiveBuffer[msgID]
+        buf["chunks"][ci] := chunkDict.Has("ct") ? chunkDict["ct"] : ""
+
+        ; Store metadata from first chunk
+        if (ci == 0) {
+            for key, val in chunkDict {
+                if (key != "id" && key != "ci" && key != "cc" && key != "ct") {
+                    buf["meta"][key] := val
+                }
+            }
+        }
+
+        LogMessage("CHUNK_RECV", "ID: " . msgID . " | Chunk " . (ci + 1) . "/" . cc
+            . " | Have " . buf["chunks"].Count . "/" . cc)
+
+        ; Check if all chunks received
+        if (buf["chunks"].Count == cc) {
+            completeMsg := ReassembleChunks(msgID)
+            if (completeMsg) {
+                HandleCompleteMessage(completeMsg)
+            }
+        }
+
+    } catch as e {
+        LogMessage("RECV_FAIL", "Error: " . e.Message . " | Raw: " . TruncateForLog(message))
+    }
 }
 
 Cleanup() {

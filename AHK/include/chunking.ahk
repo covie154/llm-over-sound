@@ -99,8 +99,8 @@ SendChunkedMessage(chunks, msgID) {
     }
 
     for i, chunkJson in chunks {
-        ; Send chunk via helper
-        result := SendData(chunkJson)
+        ; Send chunk with newline delimiter for minimodem framing
+        result := SendData(chunkJson . "`n")
 
         if (result < 0) {
             errorMsg := GetMinimodemError()
@@ -244,7 +244,7 @@ SendRetransmissionRequest(msgID, missingChunks) {
     retxJson := Jxon_Dump(retxDict)
     LogMessage("RETX_SEND", "ID: " . msgID . " | Requesting chunks: " . Jxon_Dump(missingChunks))
 
-    result := SendData(retxJson)
+    result := SendData(retxJson . "`n")
 
     if (result < 0) {
         LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetMinimodemError())
@@ -277,7 +277,7 @@ HandleRetransmissionRequest(retxDict) {
         if (idx >= 1 && idx <= chunks.Length) {
             LogMessage("RETX", "ID: " . msgID . " | Resending chunk " . ci)
 
-            result := SendData(chunks[idx])
+            result := SendData(chunks[idx] . "`n")
 
             if (result < 0) {
                 LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetMinimodemError())
