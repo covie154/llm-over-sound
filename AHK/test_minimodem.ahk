@@ -113,11 +113,8 @@ RunTests() {
     ; Load DLL
     LoadMinimodemDll()
 
-    ; Enumerate devices
-    deviceInfo := EnumerateDevices()
-    report .= deviceInfo . "`n"
-
     ; Initialize with default devices at configured baud rate
+    ; (must init before device enumeration — PortAudio requires initialization)
     report .= "Initializing minimodem (playback=-1, capture=-1, baud=" . BAUD_RATE . ")...`n"
     initResult := DllCall("minimodem_simple\minimodem_simple_init",
         "Int", -1,
@@ -133,6 +130,10 @@ RunTests() {
         return
     }
     report .= "Init OK.`n`n"
+
+    ; Enumerate devices (after init so PortAudio is available)
+    deviceInfo := EnumerateDevices()
+    report .= deviceInfo . "`n"
 
     ; Initialize logging for test session
     InitializeLog()
