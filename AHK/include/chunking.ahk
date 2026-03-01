@@ -11,7 +11,7 @@ ChunkMessage(msgDict) {
     ; Short messages (content < COMPRESSION_THRESHOLD and JSON fits in payload)
     ; are sent as a single frame with ci=0, cc=0.
     ; Longer messages are LZNT1-compressed, base64-encoded, and split into chunks.
-    global COMPRESSION_THRESHOLD, GGWAVE_PAYLOAD_LIMIT, CHUNK_DATA_SIZE
+    global COMPRESSION_THRESHOLD, MAX_PAYLOAD_SIZE, CHUNK_DATA_SIZE
 
     msgID := msgDict.Has("id") ? msgDict["id"] : ""
     content := msgDict.Has("ct") ? msgDict["ct"] : ""
@@ -28,7 +28,7 @@ ChunkMessage(msgDict) {
     }
     singleJson := Jxon_Dump(single)
 
-    if (StrLen(content) < COMPRESSION_THRESHOLD && StrLen(singleJson) <= GGWAVE_PAYLOAD_LIMIT) {
+    if (StrLen(content) < COMPRESSION_THRESHOLD && StrLen(singleJson) <= MAX_PAYLOAD_SIZE) {
         LogMessage("CHUNK", "ID: " . msgID . " | Single frame (" . StrLen(singleJson) . " bytes)")
         return [singleJson]
     }
@@ -99,14 +99,11 @@ SendChunkedMessage(chunks, msgID) {
     }
 
     for i, chunkJson in chunks {
-        ; Send chunk via DLL
-        result := DllCall("ggwave_simple\ggwave_simple_send",
-            "AStr", chunkJson,
-            "Int", 50,  ; Volume (1-100)
-            "Int")
+        ; Send chunk via helper
+        result := SendData(chunkJson)
 
         if (result < 0) {
-            errorMsg := GetGGWaveError()
+            errorMsg := GetMinimodemError()
             LogMessage("SEND_FAIL", "ID: " . msgID . " | Chunk " . i . "/" . totalChunks . " | Error: " . errorMsg)
             ToolTip()
             MsgBox("Failed to send chunk " . i . "/" . totalChunks . ": " . errorMsg, "Error", "Icon!")
@@ -120,7 +117,7 @@ SendChunkedMessage(chunks, msgID) {
         }
 
         ; Wait for transmission to complete
-        while (DllCall("ggwave_simple\ggwave_simple_is_transmitting", "Int")) {
+        while (DllCall("minimodem_simple\minimodem_simple_is_transmitting", "Int")) {
             Sleep(50)
         }
 
@@ -136,100 +133,8 @@ SendChunkedMessage(chunks, msgID) {
 }
 
 ; ---------------------------------------------------------------------------
-; Inbound: audio processing, chunk buffering, and reassembly
+; Inbound: message handling
 ; ---------------------------------------------------------------------------
-
-ProcessAudio() {
-    ; Called periodically by a timer.  Processes incoming audio, handles
-    ; chunk buffering and reassembly, and checks for timeouts.
-    global isInitialized, chunkReceiveBuffer, lastSentChunks
-
-    if (!isInitialized) {
-        return
-    }
-
-    ; Process audio buffers
-    DllCall("ggwave_simple\ggwave_simple_process", "Int")
-
-    ; Check for received message
-    buffer_msg := Buffer(512, 0)
-    received := DllCall("ggwave_simple\ggwave_simple_receive",
-        "Ptr", buffer_msg.Ptr,
-        "Int", 512,
-        "Int")
-
-    if (received > 0) {
-        message := StrGet(buffer_msg, received, "UTF-8")
-        LogMessage("RECV_RAW", "Bytes: " . received . " | Raw: " . TruncateForLog(message))
-
-        try {
-            chunkDict := Jxon_Load(&message)
-
-            ; Handle retransmission request from backend
-            if (chunkDict.Has("fn") && chunkDict["fn"] == "retx") {
-                HandleRetransmissionRequest(chunkDict)
-                return
-            }
-
-            ; Get ci/cc
-            ci := chunkDict.Has("ci") ? chunkDict["ci"] : 0
-            cc := chunkDict.Has("cc") ? chunkDict["cc"] : 0
-
-            ; Single message (no chunking)
-            if (cc == 0) {
-                completeMsg := Map()
-                for key, val in chunkDict {
-                    if (key != "ci" && key != "cc") {
-                        completeMsg[key] := val
-                    }
-                }
-                HandleCompleteMessage(completeMsg)
-                return
-            }
-
-            ; Chunked message - buffer the chunk
-            msgID := chunkDict.Has("id") ? chunkDict["id"] : ""
-
-            if (!chunkReceiveBuffer.Has(msgID)) {
-                chunkReceiveBuffer[msgID] := Map(
-                    "chunks", Map(),
-                    "cc", cc,
-                    "meta", Map(),
-                    "timestamp", A_TickCount
-                )
-            }
-
-            buf := chunkReceiveBuffer[msgID]
-            buf["chunks"][ci] := chunkDict.Has("ct") ? chunkDict["ct"] : ""
-
-            ; Store metadata from first chunk
-            if (ci == 0) {
-                for key, val in chunkDict {
-                    if (key != "id" && key != "ci" && key != "cc" && key != "ct") {
-                        buf["meta"][key] := val
-                    }
-                }
-            }
-
-            LogMessage("CHUNK_RECV", "ID: " . msgID . " | Chunk " . (ci + 1) . "/" . cc
-                . " | Have " . buf["chunks"].Count . "/" . cc)
-
-            ; Check if all chunks received
-            if (buf["chunks"].Count == cc) {
-                completeMsg := ReassembleChunks(msgID)
-                if (completeMsg) {
-                    HandleCompleteMessage(completeMsg)
-                }
-            }
-
-        } catch as e {
-            LogMessage("RECV_FAIL", "Error: " . e.Message . " | Raw: " . TruncateForLog(StrGet(buffer_msg, received, "UTF-8")))
-        }
-    }
-
-    ; Periodically check for chunk reassembly timeouts
-    CheckChunkTimeouts()
-}
 
 HandleCompleteMessage(msgDict) {
     ; Display a fully reassembled (or single-frame) message to the user.
@@ -238,7 +143,7 @@ HandleCompleteMessage(msgDict) {
     status := msgDict.Has("st") ? msgDict["st"] : ""
 
     LogMessage("RECV_OK", "ID: " . msgID . " | Content: " . TruncateForLog(content))
-    MsgBox("Message ID: " . msgID . "`nStatus: " . status . "`n`nContent:`n" . content, "ggwave - Message Received", "Iconi")
+    MsgBox("Message ID: " . msgID . "`nStatus: " . status . "`n`nContent:`n" . content, "minimodem - Message Received", "Iconi")
 }
 
 ; ---------------------------------------------------------------------------
@@ -339,18 +244,15 @@ SendRetransmissionRequest(msgID, missingChunks) {
     retxJson := Jxon_Dump(retxDict)
     LogMessage("RETX_SEND", "ID: " . msgID . " | Requesting chunks: " . Jxon_Dump(missingChunks))
 
-    result := DllCall("ggwave_simple\ggwave_simple_send",
-        "AStr", retxJson,
-        "Int", 50,
-        "Int")
+    result := SendData(retxJson)
 
     if (result < 0) {
-        LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetGGWaveError())
+        LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetMinimodemError())
         return
     }
 
     ; Wait for transmission to complete
-    while (DllCall("ggwave_simple\ggwave_simple_is_transmitting", "Int")) {
+    while (DllCall("minimodem_simple\minimodem_simple_is_transmitting", "Int")) {
         Sleep(50)
     }
 }
@@ -375,18 +277,15 @@ HandleRetransmissionRequest(retxDict) {
         if (idx >= 1 && idx <= chunks.Length) {
             LogMessage("RETX", "ID: " . msgID . " | Resending chunk " . ci)
 
-            result := DllCall("ggwave_simple\ggwave_simple_send",
-                "AStr", chunks[idx],
-                "Int", 50,
-                "Int")
+            result := SendData(chunks[idx])
 
             if (result < 0) {
-                LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetGGWaveError())
+                LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetMinimodemError())
                 continue
             }
 
             ; Wait for transmission to complete
-            while (DllCall("ggwave_simple\ggwave_simple_is_transmitting", "Int")) {
+            while (DllCall("minimodem_simple\minimodem_simple_is_transmitting", "Int")) {
                 Sleep(50)
             }
 
