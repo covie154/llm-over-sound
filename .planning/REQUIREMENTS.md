@@ -23,8 +23,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Study Matching
 
 - [x] **MTCH-01**: Each template defines a list of study type aliases in YAML frontmatter for programmatic matching
-- [ ] **MTCH-02**: A template registry builds an alias-to-filepath index at startup by scanning `rpt_templates/` recursively
-- [ ] **MTCH-03**: Study type lookup uses exact alias match first, with LLM fallback for fuzzy/unmatched input
+- [x] **MTCH-02**: A template registry builds an alias-to-filepath index at startup by scanning `rpt_templates/` recursively
+- [x] **MTCH-03**: Study type lookup uses exact alias match first, with LLM fallback for fuzzy/unmatched input
 
 ### Field Handling
 
@@ -105,8 +105,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TMPL-09 | Phase 1 | Complete |
 | TMPL-10 | Phase 4 | Pending |
 | MTCH-01 | Phase 2 | Complete |
-| MTCH-02 | Phase 2 | Pending |
-| MTCH-03 | Phase 2 | Pending |
+| MTCH-02 | Phase 2 | Complete |
+| MTCH-03 | Phase 2 | Complete |
 | FLDS-01 | Phase 3 | Pending |
 | FLDS-02 | Phase 3 | Pending |
 | FLDS-03 | Phase 4 | Pending |

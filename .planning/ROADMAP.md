@@ -13,7 +13,7 @@ This milestone delivers the template system that powers radiology report formatt
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Template Schema & Data Model** - Define YAML+markdown template format and Pydantic validation models
-- [ ] **Phase 2: Template Loader & Registry** - Parse templates from disk, build alias index, expose as standalone module
+- [x] **Phase 2: Template Loader & Registry** - Parse templates from disk, build alias index, expose as standalone module (completed 2026-03-28)
 - [ ] **Phase 3: Base Template Authoring** - Write CT AP, CT thorax, and US HBS templates with real clinical content
 - [ ] **Phase 4: Report Renderer** - Deterministic report assembly honoring interpolation, impression, and ordering flags
 - [ ] **Phase 5: Composite Templates** - Composition system for combined studies and CT TAP template
@@ -50,7 +50,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — Module reorganization, loader, exceptions, and test fixtures
-- [ ] 02-02-PLAN.md — TemplateRegistry class with alias index and comprehensive tests
+- [x] 02-02-PLAN.md — TemplateRegistry class with alias index and comprehensive tests
 
 ### Phase 3: Base Template Authoring
 **Goal**: Three clinically accurate base templates exist with real organ-level fields, normal defaults, sex-dependent pelvis fields, and measurement placeholders
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Template Schema & Data Model | 0/2 | Not started | - |
-| 2. Template Loader & Registry | 1/2 | In Progress|  |
+| 2. Template Loader & Registry | 2/2 | Complete   | 2026-03-28 |
 | 3. Base Template Authoring | 0/1 | Not started | - |
 | 4. Report Renderer | 0/2 | Not started | - |
 | 5. Composite Templates | 0/1 | Not started | - |
