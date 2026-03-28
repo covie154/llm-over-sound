@@ -49,7 +49,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Module reorganization, loader, exceptions, and test fixtures
+- [x] 02-01-PLAN.md — Module reorganization, loader, exceptions, and test fixtures
 - [ ] 02-02-PLAN.md — TemplateRegistry class with alias index and comprehensive tests
 
 ### Phase 3: Base Template Authoring
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Template Schema & Data Model | 0/2 | Not started | - |
-| 2. Template Loader & Registry | 0/2 | Not started | - |
+| 2. Template Loader & Registry | 1/2 | In Progress|  |
 | 3. Base Template Authoring | 0/1 | Not started | - |
 | 4. Report Renderer | 0/2 | Not started | - |
 | 5. Composite Templates | 0/1 | Not started | - |

@@ -22,7 +22,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Study Matching
 
-- [ ] **MTCH-01**: Each template defines a list of study type aliases in YAML frontmatter for programmatic matching
+- [x] **MTCH-01**: Each template defines a list of study type aliases in YAML frontmatter for programmatic matching
 - [ ] **MTCH-02**: A template registry builds an alias-to-filepath index at startup by scanning `rpt_templates/` recursively
 - [ ] **MTCH-03**: Study type lookup uses exact alias match first, with LLM fallback for fuzzy/unmatched input
 
@@ -48,7 +48,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Framework Integration
 
-- [ ] **FWRK-01**: The template system (loader, registry, renderer) is callable as a standalone Python module for testing and research independent of the ggwave backend
+- [x] **FWRK-01**: The template system (loader, registry, renderer) is callable as a standalone Python module for testing and research independent of the ggwave backend
 - [ ] **FWRK-02**: The template system integrates with the existing 5-stage backend pipeline -- called after the backend receives a ggwave message
 - [x] **FWRK-03**: Pydantic models define the template metadata schema and validate frontmatter at load time
 - [x] **FWRK-04**: Pydantic models define the LLM findings output schema for constrained structured output
@@ -104,7 +104,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TMPL-08 | Phase 1 | Complete |
 | TMPL-09 | Phase 1 | Complete |
 | TMPL-10 | Phase 4 | Pending |
-| MTCH-01 | Phase 2 | Pending |
+| MTCH-01 | Phase 2 | Complete |
 | MTCH-02 | Phase 2 | Pending |
 | MTCH-03 | Phase 2 | Pending |
 | FLDS-01 | Phase 3 | Pending |
@@ -118,7 +118,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SMPL-02 | Phase 3 | Pending |
 | SMPL-03 | Phase 5 | Pending |
 | SMPL-04 | Phase 3 | Pending |
-| FWRK-01 | Phase 2 | Pending |
+| FWRK-01 | Phase 2 | Complete |
 | FWRK-02 | Phase 6 | Pending |
 | FWRK-03 | Phase 1 | Complete |
 | FWRK-04 | Phase 1 | Complete |
