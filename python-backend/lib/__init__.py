@@ -13,6 +13,17 @@ from .chunking import (
 )
 from .audio import list_devices
 from .pipeline import ReportPipeline, TestPipeline, LLMPipeline
+from .template_schema import (
+    FieldDefinition,
+    GroupPartial,
+    FieldGroup,
+    TemplateSchema,
+    StudyTypeClassification,
+    create_findings_model,
+    validate_body_placeholders,
+    NOT_DOCUMENTED,
+    PLACEHOLDER_PATTERN,
+)
 
 __all__ = [
     # config
@@ -35,4 +46,14 @@ __all__ = [
     "ReportPipeline",
     "TestPipeline",
     "LLMPipeline",
+    # template_schema
+    "FieldDefinition",
+    "GroupPartial",
+    "FieldGroup",
+    "TemplateSchema",
+    "StudyTypeClassification",
+    "create_findings_model",
+    "validate_body_placeholders",
+    "NOT_DOCUMENTED",
+    "PLACEHOLDER_PATTERN",
 ]
