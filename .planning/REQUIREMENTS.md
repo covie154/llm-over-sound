@@ -14,7 +14,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **TMPL-03**: Each field stores a default normal text string (pertinent negatives authored by a radiologist)
 - [ ] **TMPL-04**: Each template has an `interpolate_normal` flag (default: false) controlling whether unreported fields get normal text or `__NOT_DOCUMENTED__`
 - [ ] **TMPL-05**: Each template has an `impression` flag (default: true) controlling whether a COMMENT/impression section is generated
-- [ ] **TMPL-06**: Each template has an `important_first` flag (default: false) — when true, findings deemed clinically important (based on clinical history, LLM decides) are moved to the top of the findings section, with remaining findings following template order
+- [ ] **TMPL-06**: Each template has an `important_first` flag (default: false) -- when true, findings deemed clinically important (based on clinical history, LLM decides) are moved to the top of the findings section, with remaining findings following template order
 - [ ] **TMPL-07**: Templates support field groups with joint normal text (e.g. "The spleen, adrenal glands and pancreas are unremarkable" when all members normal, expanding to individual fields when any member is abnormal)
 - [ ] **TMPL-08**: Templates include a technique section with boilerplate text and optional placeholders for contrast type/phase
 - [ ] **TMPL-09**: Templates include a guidance section with clinical reference information (normal/abnormal dimensions, interpretation guidance, clinical decision thresholds)
@@ -28,16 +28,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Field Handling
 
-- [ ] **FLDS-01**: Templates support sex-dependent optional fields — both male and female variants exist in the template, LLM selects based on context
-- [ ] **FLDS-02**: Measurement fields use `_` placeholders and are marked as required — missing measurements output `__NOT_DOCUMENTED__`
-- [ ] **FLDS-03**: Per-request "rest normal" override — when radiologist says "rest normal" or equivalent phrase, `interpolate_normal` is set to true for that request only
+- [ ] **FLDS-01**: Templates support sex-dependent optional fields -- both male and female variants exist in the template, LLM selects based on context
+- [ ] **FLDS-02**: Measurement fields use `_` placeholders and are marked as required -- missing measurements output `__NOT_DOCUMENTED__`
+- [ ] **FLDS-03**: Per-request "rest normal" override -- when radiologist says "rest normal" or equivalent phrase, `interpolate_normal` is set to true for that request only
 
 ### Composability
 
 - [ ] **COMP-01**: Templates support a `composable_from` directive referencing base templates by relative path
 - [ ] **COMP-02**: Composite templates concatenate fields and body sections from base templates in order (e.g. thorax findings block, then abdomen/pelvis findings block)
 - [ ] **COMP-03**: Composite templates inherit flags (impression, interpolate_normal, important_first) from the composite template frontmatter, not from base templates
-- [ ] **COMP-04**: Boundary fields have explicit ownership — no duplicate fields when composing (e.g. "imaged lung bases" belongs to abdomen/pelvis template only)
+- [ ] **COMP-04**: Boundary fields have explicit ownership -- no duplicate fields when composing (e.g. "imaged lung bases" belongs to abdomen/pelvis template only)
 
 ### Sample Templates
 
@@ -49,7 +49,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Framework Integration
 
 - [ ] **FWRK-01**: The template system (loader, registry, renderer) is callable as a standalone Python module for testing and research independent of the ggwave backend
-- [ ] **FWRK-02**: The template system integrates with the existing 5-stage backend pipeline — called after the backend receives a ggwave message
+- [ ] **FWRK-02**: The template system integrates with the existing 5-stage backend pipeline -- called after the backend receives a ggwave message
 - [ ] **FWRK-03**: Pydantic models define the template metadata schema and validate frontmatter at load time
 - [ ] **FWRK-04**: Pydantic models define the LLM findings output schema for constrained structured output
 
@@ -67,8 +67,8 @@ Deferred to future release. Tracked but not in current roadmap.
 ### Pipeline Enhancement
 
 - **PIPE-01**: Clarification requests when study type classification confidence is below threshold
-- **PIPE-02**: Post-extraction validation — regex-based check that extracted measurements appear in original draft
-- **PIPE-03**: Impression consistency check — verify abnormal findings appear in generated impression
+- **PIPE-02**: Post-extraction validation -- regex-based check that extracted measurements appear in original draft
+- **PIPE-03**: Impression consistency check -- verify abnormal findings appear in generated impression
 - **PIPE-04**: User-merged study support (e.g. "CT thorax+CTPA" parsed and composed at request time)
 
 ## Out of Scope
@@ -94,40 +94,40 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TMPL-01 | Phase ? | Pending |
-| TMPL-02 | Phase ? | Pending |
-| TMPL-03 | Phase ? | Pending |
-| TMPL-04 | Phase ? | Pending |
-| TMPL-05 | Phase ? | Pending |
-| TMPL-06 | Phase ? | Pending |
-| TMPL-07 | Phase ? | Pending |
-| TMPL-08 | Phase ? | Pending |
-| TMPL-09 | Phase ? | Pending |
-| TMPL-10 | Phase ? | Pending |
-| MTCH-01 | Phase ? | Pending |
-| MTCH-02 | Phase ? | Pending |
-| MTCH-03 | Phase ? | Pending |
-| FLDS-01 | Phase ? | Pending |
-| FLDS-02 | Phase ? | Pending |
-| FLDS-03 | Phase ? | Pending |
-| COMP-01 | Phase ? | Pending |
-| COMP-02 | Phase ? | Pending |
-| COMP-03 | Phase ? | Pending |
-| COMP-04 | Phase ? | Pending |
-| SMPL-01 | Phase ? | Pending |
-| SMPL-02 | Phase ? | Pending |
-| SMPL-03 | Phase ? | Pending |
-| SMPL-04 | Phase ? | Pending |
-| FWRK-01 | Phase ? | Pending |
-| FWRK-02 | Phase ? | Pending |
-| FWRK-03 | Phase ? | Pending |
-| FWRK-04 | Phase ? | Pending |
+| TMPL-01 | Phase 1 | Pending |
+| TMPL-02 | Phase 1 | Pending |
+| TMPL-03 | Phase 1 | Pending |
+| TMPL-04 | Phase 4 | Pending |
+| TMPL-05 | Phase 4 | Pending |
+| TMPL-06 | Phase 4 | Pending |
+| TMPL-07 | Phase 1 | Pending |
+| TMPL-08 | Phase 1 | Pending |
+| TMPL-09 | Phase 1 | Pending |
+| TMPL-10 | Phase 4 | Pending |
+| MTCH-01 | Phase 2 | Pending |
+| MTCH-02 | Phase 2 | Pending |
+| MTCH-03 | Phase 2 | Pending |
+| FLDS-01 | Phase 3 | Pending |
+| FLDS-02 | Phase 3 | Pending |
+| FLDS-03 | Phase 4 | Pending |
+| COMP-01 | Phase 5 | Pending |
+| COMP-02 | Phase 5 | Pending |
+| COMP-03 | Phase 5 | Pending |
+| COMP-04 | Phase 5 | Pending |
+| SMPL-01 | Phase 3 | Pending |
+| SMPL-02 | Phase 3 | Pending |
+| SMPL-03 | Phase 5 | Pending |
+| SMPL-04 | Phase 3 | Pending |
+| FWRK-01 | Phase 2 | Pending |
+| FWRK-02 | Phase 6 | Pending |
+| FWRK-03 | Phase 1 | Pending |
+| FWRK-04 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 28 total
-- Mapped to phases: 0
-- Unmapped: 28 ⚠️
+- Mapped to phases: 28
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-28*
-*Last updated: 2026-03-28 after initial definition*
+*Last updated: 2026-03-28 after roadmap creation*
