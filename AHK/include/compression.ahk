@@ -96,11 +96,11 @@ DecompressString(base64Str) {
 
 ; ==================== Base64 Functions (Windows Crypt32 API) ====================
 
-Base64Encode(buffer, size) {
+Base64Encode(binBuf, size) {
     ; First call to get required output size
     requiredSize := 0
     DllCall("Crypt32\CryptBinaryToStringW",
-        "Ptr", buffer.Ptr,
+        "Ptr", binBuf.Ptr,
         "UInt", size,
         "UInt", 0x40000001,  ; CRYPT_STRING_BASE64 | CRYPT_STRING_NOCRLF
         "Ptr", 0,
@@ -116,7 +116,7 @@ Base64Encode(buffer, size) {
     
     ; Second call to actually encode
     result := DllCall("Crypt32\CryptBinaryToStringW",
-        "Ptr", buffer.Ptr,
+        "Ptr", binBuf.Ptr,
         "UInt", size,
         "UInt", 0x40000001,  ; CRYPT_STRING_BASE64 | CRYPT_STRING_NOCRLF
         "Ptr", outputBuffer.Ptr,

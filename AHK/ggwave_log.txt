@@ -6,3 +6,67 @@
 [2026-02-19 23:18:04.362] [SEND_OK] ID: 10DWxIV | Transmission complete
 [2026-02-19 23:18:10.582] [RECV_RAW] Bytes: 88 | Raw: {"id": "10DWxIV", "st": "S", "ct": "Processed function test with content: Hello World!"}
 [2026-02-19 23:18:10.582] [RECV_OK] ID: 10DWxIV | Content: Processed function test with content: Hello World!
+[2026-02-27 21:32:04.124] [SESSION] Application started - Speaker: 2, Mic: 3
+[2026-02-27 21:33:00.371] [CHUNK_FAIL] ID: 78i6Wrw | Compression failed, sending single uncompressed
+[2026-02-27 21:33:00.422] [SEND] ID: 78i6Wrw | Chunk 1/1 | Content: {"cc":0,"ci":0,"ct":"# Project: LLM Over Sound — Radiology Report Formatting System\n\n\n\n## Overview\nThis system uses ggwave (data-over-sound) to pipe messages between an AutoHotkey v2\nfrontend (Windows GUI) and a Python backend running on a Raspberry Pi or equivalent SBC.\nThe backend connects to an LLM over the network. The audio channel is the sole IPC\nmechanism — messages are transmitted as sound over a direct USB audio interface cable\nconnection between the two machines [1]. No shared... [truncated, 2302 total chars]
+[2026-02-27 21:33:09.969] [SEND_OK] ID: 78i6Wrw | All 1 chunk(s) sent
+[2026-02-27 21:33:15.076] [CHUNK] ID: 7aHaPeH | Single frame (54 bytes)
+[2026-02-27 21:33:15.110] [SEND] ID: 7aHaPeH | Chunk 1/1 | Content: {"cc":0,"ci":0,"ct":"Test","fn":"test","id":"7aHaPeH"}
+[2026-02-27 21:33:19.200] [SEND_OK] ID: 7aHaPeH | All 1 chunk(s) sent
+[2026-02-27 21:33:26.473] [CHUNK] ID: 7bvH9sa | Single frame (56 bytes)
+[2026-02-27 21:33:26.500] [SEND] ID: 7bvH9sa | Chunk 1/1 | Content: {"cc":0,"ci":0,"ct":"Test\n","fn":"test","id":"7bvH9sa"}
+[2026-02-27 21:33:30.817] [SEND_OK] ID: 7bvH9sa | All 1 chunk(s) sent
+[2026-02-27 21:33:57.218] [SESSION] Application started - Speaker: 1, Mic: 3
+[2026-02-27 21:33:59.451] [CHUNK] ID: 7dRZasK | Single frame (54 bytes)
+[2026-02-27 21:33:59.483] [SEND] ID: 7dRZasK | Chunk 1/1 | Content: {"cc":0,"ci":0,"ct":"test","fn":"test","id":"7dRZasK"}
+[2026-02-27 21:34:03.333] [SEND_OK] ID: 7dRZasK | All 1 chunk(s) sent
+[2026-02-27 21:34:09.614] [RECV_RAW] Bytes: 89 | Raw: {"id":"7dRZasK","st":"S","ct":"Processed function test with content: test","ci":0,"cc":0}
+[2026-02-27 21:34:09.620] [RECV_OK] ID: 7dRZasK | Content: Processed function test with content: test
+[2026-02-27 21:36:30.708] [SESSION] Application started - Speaker: 1, Mic: 3
+[2026-02-27 21:36:35.842] [CHUNK] ID: 7p3BW6m | Content: 2206 chars -> Base64: 1988 chars
+[2026-02-27 21:36:35.842] [CHUNK] ID: 7p3BW6m | Split into 29 chunks
+[2026-02-27 21:36:35.886] [SEND] ID: 7p3BW6m | Chunk 1/29 | Content: {"cc":29,"ci":0,"ct":"zrUAIyBQcm9qZWMAdDogTExNIE8AdmVyIFNvdW4AZCDigJQgUmEAZGlvbG9neSAAUmVwb3","fn":"test","id":"7p3BW6m"}
+[2026-02-27 21:36:44.224] [SEND] ID: 7p3BW6m | Chunk 2/29 | Content: {"cc":29,"ci":1,"ct":"J0IEYAb3JtYXR0aW4AZyBTeXN0ZW0QCgojIwJqdmllAHcKVGhpcyBzAQIwIHVzZXMgZwBn","id":"7p3BW6m"}
+[2026-02-27 21:36:51.705] [SEND] ID: 7p3BW6m | Chunk 3/29 | Content: {"cc":29,"ci":2,"ct":"d2F2ZSAoZCBhdGEtbwC4LXMBAbgpIHRvIHBpAHBlIG1lc3NhAmcAKWJldHdlZQBuIGFuIE","id":"7p3BW6m"}
+[2026-02-27 21:36:59.214] [SEND] ID: 7p3BW6m | Chunk 4/29 | Content: {"cc":29,"ci":3,"ct":"F1dABvSG90a2V5IAB2Mgpmcm9udAJlAJAoV2luZG+Ad3MgR1VJKQAnAGQgYSBQeXRogG9u","id":"7p3BW6m"}
+[2026-02-27 21:37:06.738] [SEND] ID: 7p3BW6m | Chunk 5/29 | Content: {"cc":29,"ci":4,"ct":"IGJhY2sBIrBydW5uAZsAEmEAvABzcGJlcnJ5IABQaSBvciBlcQB1aXZhbGVudKAgU0JDLg","id":"7p3BW6m"}
+[2026-02-27 21:37:14.221] [SEND] ID: 7p3BW6m | Chunk 6/29 | Content: {"cc":29,"ci":5,"ct":"CsZQY40GNvbm4AgnOBS4BAAwGFgVYgdGhlIG6BgExvcmsuIFQABoRhdYCIIGNoYYAXDGwg","id":"7p3BW6m"}
+[2026-02-27 21:37:21.751] [SEND] ID: 7p3BW6m | Chunk 7/29 | Content: {"cc":29,"ci":6,"ct":"gHaBEHNvbGWAIElQQwptZYEMGGlzbYKehm1hcmUAIHRyYW5zbWl4dHRlgFsAkoKxgjFhEC","id":"7p3BW6m"}
+[2026-02-27 21:37:29.248] [SEND] ID: 7p3BW6m | Chunk 8/29 | Content: {"cc":29,"ci":7,"ct":"BkaXIAPiBVUxRCIIMvaYB4cmZhAGNlIGNhYmxlOgoET2mAa4WTgTt0dwBvIG1hY2hpbgEA","id":"7p3BW6m"}
+[2026-02-27 21:37:36.781] [SEND] ID: 7p3BW6m | Chunk 9/29 | Content: {"cc":29,"ci":8,"ct":"oFsxXS4gTm8IIHNoADdkIGZpHGxlhMSAfYRhIGxpAG5rIGV4aXN0bHMKiSQGWWEAWkVTb3","id":"7p3BW6m"}
+[2026-02-27 21:37:44.258] [SEND] ID: 7p3BW6m | Chunk 10/29 | Content: {"cc":29,"ci":9,"ct":"3AGHKAQABEQRuDJkFtLoIKAk9wcmltYYBXE0B6wClzZYFDQUktoHBvd2VyQDlyBo8KcgOP","id":"7p3BW6m"}
+[2026-02-27 21:37:51.806] [SEND] ID: 7p3BW6m | Chunk 11/29 | Content: {"cc":29,"ci":10,"ct":"ZgaPLiBBIAOFB8AiIHdyaXRlgHMKZHJhZnRALgRuZABxcyAoc3QgcnVjdHUBE3BvBcBEIE","id":"7p3BW6m"}
+[2026-02-27 21:37:59.288] [SEND] ID: 7p3BW6m | Chunk 12/29 | Content: {"cc":29,"ci":11,"ct":"EQLCBicmmgZWYgbm+ADCwBdgBpbmNvbXBsZYh0ZSBCEHMpIABK8YEsQUhLxo\/Db4MYwW0\/","id":"7p3BW6m"}
+[2026-02-27 21:38:06.828] [SEND] ID: 7p3BW6m | Chunk 13/29 | Content: {"cc":29,"ci":12,"ct":"yGOCYYSqAKZBDguWLCAAd2hpY2ggY2zAYXNzaWZpwCoBCQBzdHVkeSB0eYBwZSwgc2VsA5","id":"7p3BW6m"}
+[2026-02-27 21:38:14.284] [SEND] ID: 7p3BW6m | Chunk 14/29 | Content: {"cc":29,"ci":13,"ct":"ChAYlwcHJvQEdhQCTTxD6AynBswAMsQF+AgghjdHNCsG1hcHMBBzx0bwphbmF0QG9taWNh","id":"7p3BW6m"}
+[2026-02-27 21:38:21.825] [SEND] ID: 7p3BW6m | Chunk 15/29 | Content: {"cc":29,"ci":14,"ct":"bIAFZXhsZHPA0UG0gRtApSz\/Qg3FkoCrQBuEVUFcw1nBb4ogyDQKQAggcmVB6J+CD0RLQJ","id":"7p3BW6m"}
+[2026-02-27 21:38:29.345] [SEND] ID: 7p3BW6m | Chunk 16/29 | Content: {"cc":29,"ci":15,"ct":"MAcsB3QXJASAZ0oBcgLQotICoqCcAmIEbEbioqICgCYAACL21haW5fAGRsbC5haGtgWCk6","id":"7p3BW6m"}
+[2026-02-27 21:38:36.865] [SEND] ID: 7p3BW6m | Chunk 17/29 | Content: {"cc":29,"ci":16,"ct":"IKhxYUR0QEBwh2E1gxKoOydzCiADMwAgaW5wdXQgdgRpYUB3bXVsdGnB4FFlIEVkaaAHoH","id":"7p3BW6m"}
+[2026-02-27 21:38:44.354] [SEND] ID: 7p3BW6m | Chunk 18/29 | Content: {"cc":29,"ci":17,"ct":"yAcm9sIFsyXWAk5SA6ZGBaaXQNHmEHYCEjIArjNV9zaUE\/IEQITEwugJRjZWl2B+AGoSXS","id":"7p3BW6m"}
+[2026-02-27 21:38:51.869] [SEND] ID: 7p3BW6m | Chunk 19/29 | Content: {"cc":29,"ci":18,"ct":"IiwgcHJlAnNAgHMgX19OTwBUX0RPQ1VNRcBOVEVEX1+ACkA772EuBybjD8B9ZMBpITUAM4","id":"7p3BW6m"}
+[2026-02-27 21:38:59.347] [SEND] ID: 7p3BW6m | Chunk 20/29 | Content: {"cc":29,"ci":19,"ct":"1EOmGhPACKLiBVQZ0ATFpOVDEvWFBgUkVTUyBBLAANc8tgLKAKKKEWbnSAJ+OWAEJhc2U2","id":"7p3BW6m"}
+[2026-02-27 21:39:06.865] [SEND] ID: 7p3BW6m | Chunk 21/29 | Content: {"cc":29,"ci":20,"ct":"MiBlB6EcgTvBDXBheWxvAGFkIGVmZmljamlAA3lBIS7iMYRRQqujnCIycAKfLUR1L+QACC","id":"7p3BW6m"}
+[2026-02-27 21:39:14.367] [SEND] ID: 7p3BW6m | Chunk 22/29 | Content: {"cc":29,"ci":21,"ct":"5weUEzUnVuc19BYGygpIgARQBNIIA2ZYGBtHIncyBQQ4IyMxCQw1RUUkAaIZFzLnQgTAB2","id":"7p3BW6m"}
+[2026-02-27 21:39:21.892] [SEND] ID: 7p3BW6m | Chunk 23/29 | Content: {"cc":29,"ci":22,"ct":"ZeALgRZkZnOAaWduYWxzLEAdcGRlY28hN2WfAXRj\/GhlIHmAX0NDwFhnhC2Df6LCoUICLw","id":"7p3BW6m"}
+[2026-02-27 21:39:29.402] [SEND] ID: 7p3BW6m | Chunk 24/29 | Content: {"cc":29,"ci":23,"ct":"AKZ13gKUBGc6NitslbIFszIJ9DKLh\/wT+gDIMEgQFFuKIphBZXMnIAOGVyoilDAi13BUMC","id":"7p3BW6m"}
+[2026-02-27 21:39:36.930] [SEND] ID: 7p3BW6m | Chunk 25/29 | Content: {"cc":29,"ci":24,"ct":"L2EoQy9DKyvHwUqAkwIFIGFyYrbhCWFECGxpYnIAoOEeYgB1aWx0IHdpdABoIENNYWtlLs","id":"7p3BW6m"}
+[2026-02-27 21:39:44.407] [SEND] ID: 7p3BW6m | Chunk 26/29 | Content: {"cc":29,"ci":25,"ct":"nh6nZpQSFhIGJUwYbyZCBgdGUju+EnYQmBbT\/Fr8M9owsIEwISoc91cPEAKWVhbeXqBBDv","id":"7p3BW6m"}
+[2026-02-27 21:39:51.938] [SEND] ID: 7p3BW6m | Chunk 27/29 | Content: {"cc":29,"ci":26,"ct":"6wMJvFRlYGPhLmEJQLVrwOeuboBYQFkAeEUgxyDlkrNSAWArbnRgPkAfILNNEG5hbWVTDW","id":"7p3BW6m"}
+[2026-02-27 21:39:59.459] [SEND] ID: 7p3BW6m | Chunk 28/29 | Content: {"cc":29,"ci":27,"ct":"Fsad9QK6E8gQtAgGFnZ1AaMGWgc3Qgb2aATXAwRB\/QJT5MshzyJtxQIHNrcWBTdG9ugB6y","id":"7p3BW6m"}
+[2026-02-27 21:40:06.969] [SEND] ID: 7p3BW6m | Chunk 29/29 | Content: {"cc":29,"ci":28,"ct":"EzBSYyBlaG9sZGCIdG8BMH1zLg==","id":"7p3BW6m"}
+[2026-02-27 21:40:11.849] [SEND_OK] ID: 7p3BW6m | All 29 chunk(s) sent
+[2026-02-27 21:40:20.887] [RECV_RAW] Bytes: 93 | Raw: {"id":"7p3BW6m","fn":"retx","ci":[1,2,5,6,9,10,13,14,16,17,18,19,20,21,22,23,24,25,26,27,28]}
+[2026-02-27 21:40:20.887] [RETX] ID: 7p3BW6m | Resending chunk 1
+[2026-02-27 21:40:28.425] [RETX] ID: 7p3BW6m | Resending chunk 2
+[2026-02-27 21:40:35.952] [RETX] ID: 7p3BW6m | Resending chunk 5
+[2026-02-27 21:40:43.464] [RETX] ID: 7p3BW6m | Resending chunk 6
+[2026-02-27 21:40:50.952] [RETX] ID: 7p3BW6m | Resending chunk 9
+[2026-02-27 21:40:58.496] [RETX] ID: 7p3BW6m | Resending chunk 10
+[2026-02-27 21:41:05.972] [RETX] ID: 7p3BW6m | Resending chunk 13
+[2026-02-27 21:41:13.500] [RETX] ID: 7p3BW6m | Resending chunk 14
+[2026-02-27 21:41:28.448] [RETX] ID: 7p3BW6m | Resending chunk 16
+[2026-02-27 21:41:36.023] [RETX] ID: 7p3BW6m | Resending chunk 17
+[2026-02-27 21:41:43.570] [RETX] ID: 7p3BW6m | Resending chunk 18
+[2026-02-27 21:41:51.051] [RETX] ID: 7p3BW6m | Resending chunk 19
+[2026-02-27 21:41:58.565] [RETX] ID: 7p3BW6m | Resending chunk 20
+[2026-02-27 21:42:06.076] [RETX] ID: 7p3BW6m | Resending chunk 21
