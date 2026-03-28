@@ -29,6 +29,7 @@ from .templates.exceptions import (
     TemplateValidationError,
     TemplateNotFoundError,
 )
+from .templates.registry import TemplateRegistry
 
 __all__ = [
     # config
@@ -65,4 +66,6 @@ __all__ = [
     "TemplateLoadError",
     "TemplateValidationError",
     "TemplateNotFoundError",
+    # template registry
+    "TemplateRegistry",
 ]

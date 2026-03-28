@@ -20,6 +20,7 @@ from .exceptions import (
     TemplateNotFoundError,
 )
 from .loader import LoadedTemplate, load_template, discover_templates
+from .registry import TemplateRegistry
 
 __all__ = [
     # Schema models
@@ -41,4 +42,6 @@ __all__ = [
     "LoadedTemplate",
     "load_template",
     "discover_templates",
+    # Registry
+    "TemplateRegistry",
 ]
