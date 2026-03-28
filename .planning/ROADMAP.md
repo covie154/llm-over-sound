@@ -46,10 +46,11 @@ Plans:
   3. The template system is importable and callable as a standalone Python module without requiring the ggwave backend
 **Discussion Notes** (for /gsd:discuss-phase):
   - The alias index must support multiple templates for the same body region with different format variants (e.g. "ct ap structured" vs "ct ap freeform"). Same fields, different body layouts. Variant selection happens entirely through alias matching — no GUI toggle, text input only.
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md — Module reorganization, loader, exceptions, and test fixtures
+- [ ] 02-02-PLAN.md — TemplateRegistry class with alias index and comprehensive tests
 
 ### Phase 3: Base Template Authoring
 **Goal**: Three clinically accurate base templates exist with real organ-level fields, normal defaults, sex-dependent pelvis fields, and measurement placeholders
@@ -118,7 +119,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Template Schema & Data Model | 0/2 | Not started | - |
-| 2. Template Loader & Registry | 0/1 | Not started | - |
+| 2. Template Loader & Registry | 0/2 | Not started | - |
 | 3. Base Template Authoring | 0/1 | Not started | - |
 | 4. Report Renderer | 0/2 | Not started | - |
 | 5. Composite Templates | 0/1 | Not started | - |
