@@ -26,7 +26,7 @@ The LLM must never fabricate findings. Every extracted finding must trace to the
 - [ ] Composable templates — combined studies concatenate sections from base templates
 - [ ] Sex-dependent optional fields (prostate vs uterus/ovaries)
 - [ ] Measurement placeholders marked as required fields
-- [ ] Study type aliases for programmatic matching with LLM fallback
+- [x] Study type aliases for programmatic matching with LLM fallback — Validated in Phase 2: Template Loader & Registry
 - [ ] `impression` flag per template (whether to generate COMMENT section)
 - [ ] `interpolate_normal` flag per template (fill unreported fields with normal text)
 - [ ] Per-report override for interpolate_normal ("rest normal")
@@ -39,7 +39,7 @@ The LLM must never fabricate findings. Every extracted finding must trace to the
 
 - LLM prompt engineering and API integration — separate milestone
 - Frontend UI changes for template selection — separate milestone
-- ~~Automated testing harness~~ — pytest infrastructure created in Phase 1 (31 tests passing)
+- ~~Automated testing harness~~ — pytest infrastructure created in Phase 1 (55 tests passing after Phase 2)
 - MRI templates — CT and US first, MRI later
 - Sub-organ granularity — start organ-level, extend later
 
@@ -90,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-28 after Phase 1 completion*
+*Last updated: 2026-03-28 after Phase 2 completion*
