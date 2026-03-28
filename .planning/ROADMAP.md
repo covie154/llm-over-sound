@@ -44,6 +44,8 @@ Plans:
   1. The template registry scans rpt_templates/ recursively at startup and builds a complete alias-to-filepath index
   2. Exact alias match returns the correct template; unmatched input falls through to an LLM fallback path (stub acceptable, but interface defined)
   3. The template system is importable and callable as a standalone Python module without requiring the ggwave backend
+**Discussion Notes** (for /gsd:discuss-phase):
+  - The alias index must support multiple templates for the same body region with different format variants (e.g. "ct ap structured" vs "ct ap freeform"). Same fields, different body layouts. Variant selection happens entirely through alias matching — no GUI toggle, text input only.
 **Plans**: TBD
 
 Plans:
@@ -58,6 +60,9 @@ Plans:
   2. CT thorax template loads and validates, contains lungs, pleura, mediastinum/hila, heart/pericardium, limited abdomen, and bones fields
   3. US HBS template loads and validates, contains liver, gallbladder/CBD, spleen, and pancreas fields with measurement placeholders marked as required
   4. All templates have radiologist-authored default normal text for every field and measurement placeholders use underscore notation
+**Discussion Notes** (for /gsd:discuss-phase):
+  - Author template variants with different body layouts (structured vs freeform) for the same study type. Different section headers (HISTORY/TECHNIQUE/REPORT/COMMENT vs just FINDINGS/IMPRESSION), different boilerplate structure. The body IS the per-radiologist boilerplate — no separate config layer.
+  - Consider authoring both a structured and freeform variant for at least one study type (e.g. CT AP) to prove the variant pattern works end-to-end.
 **Plans**: TBD
 
 Plans:
