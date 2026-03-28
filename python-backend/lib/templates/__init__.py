@@ -19,6 +19,7 @@ from .exceptions import (
     TemplateValidationError,
     TemplateNotFoundError,
 )
+from .loader import LoadedTemplate, load_template, discover_templates
 
 __all__ = [
     # Schema models
@@ -36,4 +37,8 @@ __all__ = [
     "TemplateLoadError",
     "TemplateValidationError",
     "TemplateNotFoundError",
+    # Loader
+    "LoadedTemplate",
+    "load_template",
+    "discover_templates",
 ]
