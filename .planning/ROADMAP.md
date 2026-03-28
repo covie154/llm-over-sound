@@ -33,8 +33,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Pydantic models for template schema, findings output, and study type classification
-- [ ] 01-02-PLAN.md — Test infrastructure, fixture template, and comprehensive validation tests
+- [x] 01-01-PLAN.md — Pydantic models for template schema, findings output, and study type classification
+- [x] 01-02-PLAN.md — Test infrastructure, fixture template, and comprehensive validation tests
 
 ### Phase 2: Template Loader & Registry
 **Goal**: Templates on disk are discovered, parsed, indexed by alias, and resolvable by study type name -- usable as a standalone Python module
