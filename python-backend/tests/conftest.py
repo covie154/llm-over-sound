@@ -42,3 +42,10 @@ def registry_fixtures_dir() -> pathlib.Path:
 def invalid_fixtures_dir() -> pathlib.Path:
     """Path to the invalid template fixtures directory."""
     return FIXTURES_DIR / "invalid"
+
+
+@pytest.fixture
+def registry(registry_fixtures_dir):
+    """A fully loaded registry from the test fixtures."""
+    from lib.templates.registry import TemplateRegistry
+    return TemplateRegistry(registry_fixtures_dir)
