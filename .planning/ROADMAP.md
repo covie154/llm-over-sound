@@ -30,11 +30,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The Pydantic model enforces required fields: study name, aliases list, ordered field definitions with normal text, technique section, and guidance section
   3. Field groups with joint normal text are representable in the schema and validate correctly
   4. A Pydantic model exists for LLM findings output with field-name-keyed structured output that validates against a template's field list
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Pydantic models for template schema, findings output, and study type classification
+- [ ] 01-02-PLAN.md — Test infrastructure, fixture template, and comprehensive validation tests
 
 ### Phase 2: Template Loader & Registry
 **Goal**: Templates on disk are discovered, parsed, indexed by alias, and resolvable by study type name -- usable as a standalone Python module
