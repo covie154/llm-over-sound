@@ -30,3 +30,15 @@ def sample_template_metadata(sample_template_post):
 def sample_template_body(sample_template_post):
     """Markdown body string from the sample template."""
     return sample_template_post.content
+
+
+@pytest.fixture
+def registry_fixtures_dir() -> pathlib.Path:
+    """Path to the multi-template registry test fixtures directory."""
+    return FIXTURES_DIR / "registry_fixtures"
+
+
+@pytest.fixture
+def invalid_fixtures_dir() -> pathlib.Path:
+    """Path to the invalid template fixtures directory."""
+    return FIXTURES_DIR / "invalid"
