@@ -21,8 +21,8 @@ The LLM must never fabricate findings. Every extracted finding must trace to the
 
 ### Active
 
-- [ ] Template schema design (YAML frontmatter + markdown body)
-- [ ] Organ-level field definitions with default normal text per field
+- [x] Template schema design (YAML frontmatter + markdown body) — Validated in Phase 1: Template Schema & Data Model
+- [x] Organ-level field definitions with default normal text per field — Validated in Phase 1: Template Schema & Data Model
 - [ ] Composable templates — combined studies concatenate sections from base templates
 - [ ] Sex-dependent optional fields (prostate vs uterus/ovaries)
 - [ ] Measurement placeholders marked as required fields
@@ -39,7 +39,7 @@ The LLM must never fabricate findings. Every extracted finding must trace to the
 
 - LLM prompt engineering and API integration — separate milestone
 - Frontend UI changes for template selection — separate milestone
-- Automated testing harness — no test framework exists yet
+- ~~Automated testing harness~~ — pytest infrastructure created in Phase 1 (31 tests passing)
 - MRI templates — CT and US first, MRI later
 - Sub-organ granularity — start organ-level, extend later
 
@@ -90,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-28 after initialization*
+*Last updated: 2026-03-28 after Phase 1 completion*
