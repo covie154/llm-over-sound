@@ -13,7 +13,7 @@ from .chunking import (
 )
 from .audio import list_devices
 from .pipeline import ReportPipeline, TestPipeline, LLMPipeline
-from .template_schema import (
+from .templates.schema import (
     FieldDefinition,
     GroupPartial,
     FieldGroup,
@@ -23,6 +23,11 @@ from .template_schema import (
     validate_body_placeholders,
     NOT_DOCUMENTED,
     PLACEHOLDER_PATTERN,
+)
+from .templates.exceptions import (
+    TemplateLoadError,
+    TemplateValidationError,
+    TemplateNotFoundError,
 )
 
 __all__ = [
@@ -56,4 +61,8 @@ __all__ = [
     "validate_body_placeholders",
     "NOT_DOCUMENTED",
     "PLACEHOLDER_PATTERN",
+    # template exceptions
+    "TemplateLoadError",
+    "TemplateValidationError",
+    "TemplateNotFoundError",
 ]
