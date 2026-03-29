@@ -13,7 +13,7 @@ This milestone delivers the template system that powers radiology report formatt
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Template Schema & Data Model** - Define YAML+markdown template format and Pydantic validation models
-- [x] **Phase 2: Template Loader & Registry** - Parse templates from disk, build alias index, expose as standalone module (completed 2026-03-28)
+- [x] **Phase 2: Template Loader & Registry** - Parse templates from disk, build alias index, expose as standalone module (completed 2026-03-28)
 - [ ] **Phase 3: Base Template Authoring** - Write CT AP, CT thorax, and US HBS templates with real clinical content
 - [ ] **Phase 4: Report Renderer** - Deterministic report assembly honoring interpolation, impression, and ordering flags
 - [ ] **Phase 5: Composite Templates** - Composition system for combined studies and CT TAP template
@@ -64,10 +64,11 @@ Plans:
 **Discussion Notes** (for /gsd:discuss-phase):
   - Author template variants with different body layouts (structured vs freeform) for the same study type. Different section headers (HISTORY/TECHNIQUE/REPORT/COMMENT vs just FINDINGS/IMPRESSION), different boilerplate structure. The body IS the per-radiologist boilerplate — no separate config layer.
   - Consider authoring both a structured and freeform variant for at least one study type (e.g. CT AP) to prove the variant pattern works end-to-end.
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — Schema update (optional flag), CT AP freeform template, and test scaffold
+- [ ] 03-02-PLAN.md — CT AP structured variant, CT thorax, and US HBS templates
 
 ### Phase 4: Report Renderer
 **Goal**: Given a template and extracted findings, the renderer produces a correctly formatted report respecting all template flags and field handling rules
@@ -120,7 +121,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 1. Template Schema & Data Model | 0/2 | Not started | - |
 | 2. Template Loader & Registry | 2/2 | Complete   | 2026-03-28 |
-| 3. Base Template Authoring | 0/1 | Not started | - |
+| 3. Base Template Authoring | 0/2 | Not started | - |
 | 4. Report Renderer | 0/2 | Not started | - |
 | 5. Composite Templates | 0/1 | Not started | - |
 | 6. Pipeline Integration | 0/1 | Not started | - |
