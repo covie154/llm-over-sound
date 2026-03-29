@@ -29,7 +29,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Field Handling
 
 - [x] **FLDS-01**: Templates support sex-dependent optional fields -- both male and female variants exist in the template, LLM selects based on context
-- [ ] **FLDS-02**: Measurement fields use `_` placeholders and are marked as required -- missing measurements output `__NOT_DOCUMENTED__`
+- [x] **FLDS-02**: Measurement fields use `_` placeholders and are marked as required -- missing measurements output `__NOT_DOCUMENTED__`
 - [ ] **FLDS-03**: Per-request "rest normal" override -- when radiologist says "rest normal" or equivalent phrase, `interpolate_normal` is set to true for that request only
 
 ### Composability
@@ -42,9 +42,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Sample Templates
 
 - [x] **SMPL-01**: CT abdomen and pelvis template with full organ-level fields, normal defaults, sex-dependent pelvis fields, and guidance section
-- [ ] **SMPL-02**: CT thorax template with lungs, pleura, mediastinum/hila, heart/pericardium, limited abdomen, and bones fields
+- [x] **SMPL-02**: CT thorax template with lungs, pleura, mediastinum/hila, heart/pericardium, limited abdomen, and bones fields
 - [ ] **SMPL-03**: CT thorax, abdomen and pelvis composite template referencing CT thorax + CT abdomen/pelvis base templates
-- [ ] **SMPL-04**: US HBS template with liver, gallbladder/CBD, spleen, and pancreas fields including measurement placeholders
+- [x] **SMPL-04**: US HBS template with liver, gallbladder/CBD, spleen, and pancreas fields including measurement placeholders
 
 ### Framework Integration
 
@@ -108,16 +108,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MTCH-02 | Phase 2 | Complete |
 | MTCH-03 | Phase 2 | Complete |
 | FLDS-01 | Phase 3 | Complete |
-| FLDS-02 | Phase 3 | Pending |
+| FLDS-02 | Phase 3 | Complete |
 | FLDS-03 | Phase 4 | Pending |
 | COMP-01 | Phase 5 | Pending |
 | COMP-02 | Phase 5 | Pending |
 | COMP-03 | Phase 5 | Pending |
 | COMP-04 | Phase 5 | Pending |
 | SMPL-01 | Phase 3 | Complete |
-| SMPL-02 | Phase 3 | Pending |
+| SMPL-02 | Phase 3 | Complete |
 | SMPL-03 | Phase 5 | Pending |
-| SMPL-04 | Phase 3 | Pending |
+| SMPL-04 | Phase 3 | Complete |
 | FWRK-01 | Phase 2 | Complete |
 | FWRK-02 | Phase 6 | Pending |
 | FWRK-03 | Phase 1 | Complete |
