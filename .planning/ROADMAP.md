@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Template Schema & Data Model** - Define YAML+markdown template format and Pydantic validation models
 - [x] **Phase 2: Template Loader & Registry** - Parse templates from disk, build alias index, expose as standalone module (completed 2026-03-28)
-- [x] **Phase 3: Base Template Authoring** - Write CT AP, CT thorax, and US HBS templates with real clinical content (completed 2026-03-29)
+- [x] **Phase 3: Base Template Authoring** - Write CT AP, CT thorax, and US HBS templates with real clinical content (completed 2026-03-29)
 - [ ] **Phase 4: Report Renderer** - Deterministic report assembly honoring interpolation, impression, and ordering flags
 - [ ] **Phase 5: Composite Templates** - Composition system for combined studies and CT TAP template
 - [ ] **Phase 6: Pipeline Integration** - Wire template system into the existing 5-stage backend pipeline
@@ -80,11 +80,11 @@ Plans:
   3. When important_first is true, findings flagged as clinically important are rendered before other findings; when false, template order is preserved
   4. A per-request "rest normal" phrase overrides interpolate_normal to true for that single request only
   5. Field groups render joint normal text when all members are unreported (and interpolate_normal is on), but expand to individual fields when any member has findings
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Schema variant field, renderer module (base + freeform + structured), and unit tests
+- [ ] 04-02-PLAN.md — Integration tests with real production templates
 
 ### Phase 5: Composite Templates
 **Goal**: Combined study templates compose from base templates, and the CT TAP template correctly concatenates thorax and abdomen/pelvis sections
