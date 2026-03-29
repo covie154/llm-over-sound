@@ -67,7 +67,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Schema update (optional flag), CT AP freeform template, and test scaffold
+- [x] 03-01-PLAN.md — Schema update (optional flag), CT AP freeform template, and test scaffold
 - [ ] 03-02-PLAN.md — CT AP structured variant, CT thorax, and US HBS templates
 
 ### Phase 4: Report Renderer
@@ -121,7 +121,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 1. Template Schema & Data Model | 0/2 | Not started | - |
 | 2. Template Loader & Registry | 2/2 | Complete   | 2026-03-28 |
-| 3. Base Template Authoring | 0/2 | Not started | - |
+| 3. Base Template Authoring | 1/2 | In Progress|  |
 | 4. Report Renderer | 0/2 | Not started | - |
 | 5. Composite Templates | 0/1 | Not started | - |
 | 6. Pipeline Integration | 0/1 | Not started | - |
