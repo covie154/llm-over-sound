@@ -43,6 +43,7 @@ class FieldDefinition(BaseModel):
     name: str
     normal: str
     sex: Optional[str] = None
+    optional: bool = False
 
     @field_validator("name")
     @classmethod
