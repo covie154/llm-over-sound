@@ -24,22 +24,22 @@ The LLM must never fabricate findings. Every extracted finding must trace to the
 - [x] Template schema design (YAML frontmatter + markdown body) — Validated in Phase 1: Template Schema & Data Model
 - [x] Organ-level field definitions with default normal text per field — Validated in Phase 1: Template Schema & Data Model
 - [ ] Composable templates — combined studies concatenate sections from base templates
-- [ ] Sex-dependent optional fields (prostate vs uterus/ovaries)
-- [ ] Measurement placeholders marked as required fields
+- [x] Sex-dependent optional fields (prostate vs uterus/ovaries) — Validated in Phase 3: Base Template Authoring
+- [x] Measurement placeholders marked as required fields — Validated in Phase 3: Base Template Authoring
 - [x] Study type aliases for programmatic matching with LLM fallback — Validated in Phase 2: Template Loader & Registry
 - [ ] `impression` flag per template (whether to generate COMMENT section)
 - [ ] `interpolate_normal` flag per template (fill unreported fields with normal text)
 - [ ] Per-report override for interpolate_normal ("rest normal")
-- [ ] CT abdomen and pelvis template
-- [ ] CT thorax template
+- [x] CT abdomen and pelvis template — Validated in Phase 3: Base Template Authoring (freeform + structured variant)
+- [x] CT thorax template — Validated in Phase 3: Base Template Authoring
 - [ ] CT thorax, abdomen and pelvis (combined) template
-- [ ] US HBS template
+- [x] US HBS template — Validated in Phase 3: Base Template Authoring
 
 ### Out of Scope
 
 - LLM prompt engineering and API integration — separate milestone
 - Frontend UI changes for template selection — separate milestone
-- ~~Automated testing harness~~ — pytest infrastructure created in Phase 1 (55 tests passing after Phase 2)
+- ~~Automated testing harness~~ — pytest infrastructure created in Phase 1 (68 tests passing after Phase 3)
 - MRI templates — CT and US first, MRI later
 - Sub-organ granularity — start organ-level, extend later
 
@@ -90,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-28 after Phase 2 completion*
+*Last updated: 2026-03-29 after Phase 3 completion*
