@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-29T15:37:37.139Z"
-last_activity: 2026-03-29
+status: executing
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-30T13:51:10.242Z"
+last_activity: 2026-03-30
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 6
+  total_plans: 8
   completed_plans: 6
   percent: 0
 ---
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** The LLM must never fabricate findings. Every extracted finding must trace to the radiologist's draft input.
-**Current focus:** Phase 01 — template-schema-data-model
+**Current focus:** Phase 04 — report-renderer
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-03-29
+Phase: 04 (report-renderer) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-03-30
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -58,6 +58,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02 P02 | 3min | 2 tasks | 5 files |
 | Phase 03 P01 | 2min | 2 tasks | 3 files |
 | Phase 03 P02 | 3min | 2 tasks | 3 files |
+| Phase 04 P01 | 8min | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,8 @@ Recent decisions affecting current work:
 - [Phase 03]: CT AP template established as reference pattern with 18 craniocaudal fields, sex-dependent pelvis, and clinical guidance
 - [Phase 03]: US HBS measurement placeholders appear in both frontmatter normal text and body for test compatibility and render-time access
 - [Phase 03]: CT AP structured variant uses markdown table for organ status with Key/Other Findings subsections
+- [Phase 04]: TABLE_ROW_PATTERN anchored with ^ and re.MULTILINE to prevent cross-line captures from separator rows
+- [Phase 04]: Two-pass substitution pattern: field/technique first, then measurements for normal text containing measurement placeholders
 
 ### Pending Todos
 
@@ -90,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T15:37:37.133Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-report-renderer/04-CONTEXT.md
+Last session: 2026-03-30T13:51:10.237Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None

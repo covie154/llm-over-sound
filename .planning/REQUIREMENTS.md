@@ -12,13 +12,13 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **TMPL-01**: Template files use YAML frontmatter + markdown body format, parseable by python-frontmatter
 - [x] **TMPL-02**: Each template defines organ-level fields with ordered field list preserving craniocaudal or logical reporting order
 - [x] **TMPL-03**: Each field stores a default normal text string (pertinent negatives authored by a radiologist)
-- [ ] **TMPL-04**: Each template has an `interpolate_normal` flag (default: false) controlling whether unreported fields get normal text or `__NOT_DOCUMENTED__`
-- [ ] **TMPL-05**: Each template has an `impression` flag (default: true) controlling whether a COMMENT/impression section is generated
-- [ ] **TMPL-06**: Each template has an `important_first` flag (default: false) -- when true, findings deemed clinically important (based on clinical history, LLM decides) are moved to the top of the findings section, with remaining findings following template order
+- [x] **TMPL-04**: Each template has an `interpolate_normal` flag (default: false) controlling whether unreported fields get normal text or `__NOT_DOCUMENTED__`
+- [x] **TMPL-05**: Each template has an `impression` flag (default: true) controlling whether a COMMENT/impression section is generated
+- [x] **TMPL-06**: Each template has an `important_first` flag (default: false) -- when true, findings deemed clinically important (based on clinical history, LLM decides) are moved to the top of the findings section, with remaining findings following template order
 - [x] **TMPL-07**: Templates support field groups with joint normal text (e.g. "The spleen, adrenal glands and pancreas are unremarkable" when all members normal, expanding to individual fields when any member is abnormal)
 - [x] **TMPL-08**: Templates include a technique section with boilerplate text and optional placeholders for contrast type/phase
 - [x] **TMPL-09**: Templates include a guidance section with clinical reference information (normal/abnormal dimensions, interpretation guidance, clinical decision thresholds)
-- [ ] **TMPL-10**: Unreported fields not interpolated as normal must output the literal string `__NOT_DOCUMENTED__`
+- [x] **TMPL-10**: Unreported fields not interpolated as normal must output the literal string `__NOT_DOCUMENTED__`
 
 ### Study Matching
 
@@ -30,7 +30,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **FLDS-01**: Templates support sex-dependent optional fields -- both male and female variants exist in the template, LLM selects based on context
 - [x] **FLDS-02**: Measurement fields use `_` placeholders and are marked as required -- missing measurements output `__NOT_DOCUMENTED__`
-- [ ] **FLDS-03**: Per-request "rest normal" override -- when radiologist says "rest normal" or equivalent phrase, `interpolate_normal` is set to true for that request only
+- [x] **FLDS-03**: Per-request "rest normal" override -- when radiologist says "rest normal" or equivalent phrase, `interpolate_normal` is set to true for that request only
 
 ### Composability
 
@@ -97,19 +97,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TMPL-01 | Phase 1 | Complete |
 | TMPL-02 | Phase 1 | Complete |
 | TMPL-03 | Phase 1 | Complete |
-| TMPL-04 | Phase 4 | Pending |
-| TMPL-05 | Phase 4 | Pending |
-| TMPL-06 | Phase 4 | Pending |
+| TMPL-04 | Phase 4 | Complete |
+| TMPL-05 | Phase 4 | Complete |
+| TMPL-06 | Phase 4 | Complete |
 | TMPL-07 | Phase 1 | Complete |
 | TMPL-08 | Phase 1 | Complete |
 | TMPL-09 | Phase 1 | Complete |
-| TMPL-10 | Phase 4 | Pending |
+| TMPL-10 | Phase 4 | Complete |
 | MTCH-01 | Phase 2 | Complete |
 | MTCH-02 | Phase 2 | Complete |
 | MTCH-03 | Phase 2 | Complete |
 | FLDS-01 | Phase 3 | Complete |
 | FLDS-02 | Phase 3 | Complete |
-| FLDS-03 | Phase 4 | Pending |
+| FLDS-03 | Phase 4 | Complete |
 | COMP-01 | Phase 5 | Pending |
 | COMP-02 | Phase 5 | Pending |
 | COMP-03 | Phase 5 | Pending |
