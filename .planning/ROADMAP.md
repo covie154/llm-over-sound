@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: Template Schema & Data Model** - Define YAML+markdown template format and Pydantic validation models
 - [x] **Phase 2: Template Loader & Registry** - Parse templates from disk, build alias index, expose as standalone module (completed 2026-03-28)
 - [x] **Phase 3: Base Template Authoring** - Write CT AP, CT thorax, and US HBS templates with real clinical content (completed 2026-03-29)
-- [ ] **Phase 4: Report Renderer** - Deterministic report assembly honoring interpolation, impression, and ordering flags
+- [x] **Phase 4: Report Renderer** - Deterministic report assembly honoring interpolation, impression, and ordering flags (completed 2026-03-30)
 - [ ] **Phase 5: Composite Templates** - Composition system for combined studies and CT TAP template
 - [ ] **Phase 6: Pipeline Integration** - Wire template system into the existing 5-stage backend pipeline
 
@@ -83,8 +83,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Schema variant field, renderer module (base + freeform + structured), and unit tests
-- [ ] 04-02-PLAN.md — Integration tests with real production templates
+- [x] 04-01-PLAN.md — Schema variant field, renderer module (base + freeform + structured), and unit tests
+- [x] 04-02-PLAN.md — Integration tests with real production templates
 
 ### Phase 5: Composite Templates
 **Goal**: Combined study templates compose from base templates, and the CT TAP template correctly concatenates thorax and abdomen/pelvis sections
@@ -122,6 +122,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Template Schema & Data Model | 0/2 | Not started | - |
 | 2. Template Loader & Registry | 2/2 | Complete   | 2026-03-28 |
 | 3. Base Template Authoring | 2/2 | Complete   | 2026-03-29 |
-| 4. Report Renderer | 0/2 | Not started | - |
+| 4. Report Renderer | 2/2 | Complete   | 2026-03-30 |
 | 5. Composite Templates | 0/1 | Not started | - |
 | 6. Pipeline Integration | 0/1 | Not started | - |
