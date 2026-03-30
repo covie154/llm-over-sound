@@ -21,6 +21,7 @@ from .exceptions import (
 )
 from .loader import LoadedTemplate, load_template, discover_templates
 from .registry import TemplateRegistry
+from .renderer import ReportRenderer, FreeformRenderer, StructuredRenderer, render_report
 
 __all__ = [
     # Schema models
@@ -44,4 +45,9 @@ __all__ = [
     "discover_templates",
     # Registry
     "TemplateRegistry",
+    # Renderer
+    "ReportRenderer",
+    "FreeformRenderer",
+    "StructuredRenderer",
+    "render_report",
 ]
