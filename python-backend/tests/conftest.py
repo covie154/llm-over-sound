@@ -49,3 +49,32 @@ def registry(registry_fixtures_dir):
     """A fully loaded registry from the test fixtures."""
     from lib.templates.registry import TemplateRegistry
     return TemplateRegistry(registry_fixtures_dir)
+
+
+@pytest.fixture
+def renderer_fixtures_dir() -> pathlib.Path:
+    return FIXTURES_DIR / "renderer"
+
+
+@pytest.fixture
+def freeform_template(renderer_fixtures_dir):
+    from lib.templates.loader import load_template
+    return load_template(renderer_fixtures_dir / "freeform_minimal.rpt.md")
+
+
+@pytest.fixture
+def structured_template(renderer_fixtures_dir):
+    from lib.templates.loader import load_template
+    return load_template(renderer_fixtures_dir / "structured_minimal.rpt.md")
+
+
+@pytest.fixture
+def groups_template(renderer_fixtures_dir):
+    from lib.templates.loader import load_template
+    return load_template(renderer_fixtures_dir / "groups_minimal.rpt.md")
+
+
+@pytest.fixture
+def measurements_template(renderer_fixtures_dir):
+    from lib.templates.loader import load_template
+    return load_template(renderer_fixtures_dir / "measurements_minimal.rpt.md")

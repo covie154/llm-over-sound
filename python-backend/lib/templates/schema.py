@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import keyword
 import re
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import (
     BaseModel,
@@ -146,6 +146,7 @@ class TemplateSchema(BaseModel):
     interpolate_normal: bool = False
     impression: bool = True
     important_first: bool = False
+    variant: Literal["freeform", "structured"] = "freeform"
 
     @field_validator("aliases")
     @classmethod

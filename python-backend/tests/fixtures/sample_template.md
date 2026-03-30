@@ -7,6 +7,7 @@ technique: "CT of the abdomen was performed with intravenous contrast in the por
 interpolate_normal: false
 impression: true
 important_first: false
+variant: "freeform"
 fields:
   - name: "liver"
     normal: "The liver is normal in size and attenuation. No focal lesion."
