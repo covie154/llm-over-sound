@@ -9,6 +9,7 @@ technique: "Ultrasound of the hepatobiliary system was performed."
 interpolate_normal: false
 impression: true
 important_first: false
+variant: "freeform"
 fields:
   - name: "liver"
     normal: "The liver is normal in echotexture, measuring {{measurement:liver_span_cm}} cm in craniocaudal span. No focal lesion."

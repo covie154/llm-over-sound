@@ -8,6 +8,7 @@ technique: "CT of the thorax was performed with intravenous contrast in the arte
 interpolate_normal: false
 impression: true
 important_first: false
+variant: "freeform"
 fields:
   - name: "lungs"
     normal: "The lungs are clear. No consolidation, mass or nodule."

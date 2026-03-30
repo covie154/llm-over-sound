@@ -9,6 +9,7 @@ technique: "CT of the abdomen and pelvis was performed with intravenous contrast
 interpolate_normal: false
 impression: true
 important_first: true
+variant: "structured"
 fields:
   - name: "liver"
     normal: "The liver is normal in size and attenuation. No focal lesion."
