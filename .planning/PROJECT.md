@@ -27,9 +27,9 @@ The LLM must never fabricate findings. Every extracted finding must trace to the
 - [x] Sex-dependent optional fields (prostate vs uterus/ovaries) — Validated in Phase 3: Base Template Authoring
 - [x] Measurement placeholders marked as required fields — Validated in Phase 3: Base Template Authoring
 - [x] Study type aliases for programmatic matching with LLM fallback — Validated in Phase 2: Template Loader & Registry
-- [ ] `impression` flag per template (whether to generate COMMENT section)
-- [ ] `interpolate_normal` flag per template (fill unreported fields with normal text)
-- [ ] Per-report override for interpolate_normal ("rest normal")
+- [x] `impression` flag per template (whether to generate COMMENT section) — Validated in Phase 4: Report Renderer
+- [x] `interpolate_normal` flag per template (fill unreported fields with normal text) — Validated in Phase 4: Report Renderer
+- [x] Per-report override for interpolate_normal ("rest normal") — Validated in Phase 4: Report Renderer
 - [x] CT abdomen and pelvis template — Validated in Phase 3: Base Template Authoring (freeform + structured variant)
 - [x] CT thorax template — Validated in Phase 3: Base Template Authoring
 - [ ] CT thorax, abdomen and pelvis (combined) template
@@ -90,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-29 after Phase 3 completion*
+*Last updated: 2026-03-30 after Phase 4 completion*
