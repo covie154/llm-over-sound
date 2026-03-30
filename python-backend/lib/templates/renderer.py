@@ -33,7 +33,7 @@ SECTION_HEADER_PATTERN = re.compile(r"^## (.+)$", re.MULTILINE)
 
 BLANK_LINE_PATTERN = re.compile(r"\n{4,}")
 
-TABLE_ROW_PATTERN = re.compile(r"\|\s*(.+?)\s*\|\s*\{\{(\w+)\}\}\s*\|")
+TABLE_ROW_PATTERN = re.compile(r"^\|\s*(.+?)\s*\|\s*\{\{(\w+)\}\}\s*\|", re.MULTILINE)
 
 TECHNIQUE_PATTERN = re.compile(r"\{\{technique:(\w+)\}\}")
 
@@ -278,7 +278,7 @@ class ReportRenderer:
         if not schema.impression:
             # Strip entire COMMENT section (per D-22)
             body = re.sub(
-                r"^## COMMENT\s*\n?.*",
+                r"^## COMMENT.*",
                 "",
                 body,
                 flags=re.MULTILINE | re.DOTALL,
@@ -306,9 +306,9 @@ class ReportRenderer:
         else:
             impression_text = "(impression not generated)"
 
-        # Replace COMMENT section content
+        # Replace COMMENT section content (handle both trailing content and empty)
         body = re.sub(
-            r"(^## COMMENT\s*\n).*",
+            r"(^## COMMENT\s*\n?).*",
             rf"\g<1>\n{impression_text}\n",
             body,
             flags=re.MULTILINE | re.DOTALL,
@@ -520,7 +520,7 @@ class StructuredRenderer(ReportRenderer):
 
         # Remove the markdown table (header row, separator, data rows)
         body = re.sub(
-            r"\|[^\n]*Organ[^\n]*\|\s*\n\|[-|\s]*\|\s*\n(?:\|[^\n]*\|\s*\n)*",
+            r"\|[^\n]*Organ[^\n]*\|\s*\n\|[-|\s]*\|\s*\n(?:\|[^\n]*\|\s*\n?)*",
             status_block + "\n\n",
             body,
         )
