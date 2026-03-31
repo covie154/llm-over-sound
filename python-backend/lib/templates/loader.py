@@ -80,11 +80,17 @@ def load_template(path: pathlib.Path) -> LoadedTemplate:
 
     body = post.content
 
-    # D-03: Body placeholder cross-validation is fatal at load time
-    issues = validate_body_placeholders(schema, body)
-    if issues:
-        raise TemplateValidationError(
-            [TemplateLoadError(str(path), issue) for issue in issues]
-        )
+    # D-03: Body placeholder cross-validation is fatal at load time.
+    # Skip for composite templates -- their body references fields from bases
+    # that are not in the composite's own frontmatter fields list.
+    # Validation runs after composition instead (Pitfall 5).
+    if schema.composable_from is not None:
+        pass  # Defer validation to compose_template()
+    else:
+        issues = validate_body_placeholders(schema, body)
+        if issues:
+            raise TemplateValidationError(
+                [TemplateLoadError(str(path), issue) for issue in issues]
+            )
 
     return LoadedTemplate(schema=schema, body=body, file_path=str(path))

@@ -147,6 +147,8 @@ class TemplateSchema(BaseModel):
     impression: bool = True
     important_first: bool = False
     variant: Literal["freeform", "structured"] = "freeform"
+    composable_from: list[str] | None = None
+    exclude_fields: dict[str, list[str]] | None = None
 
     @field_validator("aliases")
     @classmethod
@@ -156,13 +158,24 @@ class TemplateSchema(BaseModel):
             raise ValueError("At least one alias is required")
         return v
 
-    @field_validator("fields")
+    @field_validator("composable_from")
     @classmethod
-    def validate_fields_nonempty(cls, v: list[FieldDefinition]) -> list[FieldDefinition]:
-        """Ensure at least one field is defined."""
-        if len(v) < 1:
-            raise ValueError("At least one field is required")
+    def validate_composable_from(cls, v: list[str] | None) -> list[str] | None:
+        """Ensure composable_from is non-empty when present."""
+        if v is not None and len(v) < 1:
+            raise ValueError("composable_from must have at least one base template path")
         return v
+
+    @model_validator(mode="after")
+    def validate_fields_nonempty(self) -> TemplateSchema:
+        """Ensure at least one field is defined (unless composite).
+
+        Composite templates may define no own fields if all fields come
+        from bases. Non-composite templates must have at least one field.
+        """
+        if self.composable_from is None and len(self.fields) < 1:
+            raise ValueError("At least one field is required")
+        return self
 
     @model_validator(mode="after")
     def validate_groups_against_fields(self) -> TemplateSchema:
