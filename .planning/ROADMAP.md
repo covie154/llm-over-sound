@@ -95,10 +95,11 @@ Plans:
   2. The composed template concatenates fields and body sections in order (thorax block then abdomen/pelvis block) without duplicate fields at boundaries
   3. Composite template flags (impression, interpolate_normal, important_first) come from the composite frontmatter, not from base templates
   4. The CT TAP composite template renders a complete report using the renderer from Phase 4
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: TBD
+- [ ] 05-01-PLAN.md — Schema extension, composer module, and composition unit tests
+- [ ] 05-02-PLAN.md — CT TAP template authoring, registry two-pass loading, and integration tests
 
 ### Phase 6: Pipeline Integration
 **Goal**: The template system is wired into the existing 5-stage backend pipeline so that ggwave messages trigger template-based report formatting end-to-end
@@ -123,5 +124,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Template Loader & Registry | 2/2 | Complete   | 2026-03-28 |
 | 3. Base Template Authoring | 2/2 | Complete   | 2026-03-29 |
 | 4. Report Renderer | 2/2 | Complete   | 2026-03-30 |
-| 5. Composite Templates | 0/1 | Not started | - |
+| 5. Composite Templates | 0/2 | Not started | - |
 | 6. Pipeline Integration | 0/1 | Not started | - |
