@@ -20,6 +20,7 @@ from .exceptions import (
     TemplateNotFoundError,
 )
 from .loader import LoadedTemplate, load_template, discover_templates
+from .composer import compose_template
 from .registry import TemplateRegistry
 from .renderer import ReportRenderer, FreeformRenderer, StructuredRenderer, render_report
 
@@ -43,6 +44,8 @@ __all__ = [
     "LoadedTemplate",
     "load_template",
     "discover_templates",
+    # Composer
+    "compose_template",
     # Registry
     "TemplateRegistry",
     # Renderer
