@@ -34,10 +34,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Composability
 
-- [ ] **COMP-01**: Templates support a `composable_from` directive referencing base templates by relative path
-- [ ] **COMP-02**: Composite templates concatenate fields and body sections from base templates in order (e.g. thorax findings block, then abdomen/pelvis findings block)
-- [ ] **COMP-03**: Composite templates inherit flags (impression, interpolate_normal, important_first) from the composite template frontmatter, not from base templates
-- [ ] **COMP-04**: Boundary fields have explicit ownership -- no duplicate fields when composing (e.g. "imaged lung bases" belongs to abdomen/pelvis template only)
+- [x] **COMP-01**: Templates support a `composable_from` directive referencing base templates by relative path
+- [x] **COMP-02**: Composite templates concatenate fields and body sections from base templates in order (e.g. thorax findings block, then abdomen/pelvis findings block)
+- [x] **COMP-03**: Composite templates inherit flags (impression, interpolate_normal, important_first) from the composite template frontmatter, not from base templates
+- [x] **COMP-04**: Boundary fields have explicit ownership -- no duplicate fields when composing (e.g. "imaged lung bases" belongs to abdomen/pelvis template only)
 
 ### Sample Templates
 
@@ -110,10 +110,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FLDS-01 | Phase 3 | Complete |
 | FLDS-02 | Phase 3 | Complete |
 | FLDS-03 | Phase 4 | Complete |
-| COMP-01 | Phase 5 | Pending |
-| COMP-02 | Phase 5 | Pending |
-| COMP-03 | Phase 5 | Pending |
-| COMP-04 | Phase 5 | Pending |
+| COMP-01 | Phase 5 | Complete |
+| COMP-02 | Phase 5 | Complete |
+| COMP-03 | Phase 5 | Complete |
+| COMP-04 | Phase 5 | Complete |
 | SMPL-01 | Phase 3 | Complete |
 | SMPL-02 | Phase 3 | Complete |
 | SMPL-03 | Phase 5 | Pending |

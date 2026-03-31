@@ -98,7 +98,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Schema extension, composer module, and composition unit tests
+- [x] 05-01-PLAN.md — Schema extension, composer module, and composition unit tests
 - [ ] 05-02-PLAN.md — CT TAP template authoring, registry two-pass loading, and integration tests
 
 ### Phase 6: Pipeline Integration

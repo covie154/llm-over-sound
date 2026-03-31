@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-31T14:56:34.315Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-31T15:29:50.130Z"
 last_activity: 2026-03-30
 progress:
   total_phases: 6
   completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 10
+  completed_plans: 9
   percent: 0
 ---
 
@@ -60,6 +60,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03 P02 | 3min | 2 tasks | 3 files |
 | Phase 04 P01 | 8min | 3 tasks | 14 files |
 | Phase 04 P02 | 2min | 1 tasks | 1 files |
+| Phase 05 P01 | 5min | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,9 @@ Recent decisions affecting current work:
 - [Phase 04]: TABLE_ROW_PATTERN anchored with ^ and re.MULTILINE to prevent cross-line captures from separator rows
 - [Phase 04]: Two-pass substitution pattern: field/technique first, then measurements for normal text containing measurement placeholders
 - [Phase 04]: Parametrized cross-template tests for guidance stripping and header conversion
+- [Phase 05]: validate_fields_nonempty converted to model_validator for conditional empty-fields check on composites
+- [Phase 05]: Body placeholder validation deferred to compose_template() for composites (Pitfall 5)
+- [Phase 05]: Composed schema sets composable_from=None to indicate resolved state
 
 ### Pending Todos
 
@@ -95,6 +99,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-31T14:56:34.309Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-composite-templates/05-CONTEXT.md
+Last session: 2026-03-31T15:29:50.124Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None
