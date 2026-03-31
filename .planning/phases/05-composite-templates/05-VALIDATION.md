@@ -38,20 +38,20 @@ created: 2026-03-31
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 05-01-01 | 01 | 1 | COMP-01 | unit | `python -m pytest tests/test_composer.py -k composable_from -v` | ❌ W0 | ⬜ pending |
-| 05-01-02 | 01 | 1 | COMP-02 | unit | `python -m pytest tests/test_composer.py -k concatenate -v` | ❌ W0 | ⬜ pending |
-| 05-01-03 | 01 | 1 | COMP-03 | unit | `python -m pytest tests/test_composer.py -k flags -v` | ❌ W0 | ⬜ pending |
-| 05-01-04 | 01 | 1 | COMP-04 | unit | `python -m pytest tests/test_composer.py -k exclude -v` | ❌ W0 | ⬜ pending |
-| 05-02-01 | 02 | 2 | SMPL-03 | integration | `python -m pytest tests/test_composite_integration.py -v` | ❌ W0 | ⬜ pending |
+| 05-01-01 | 01 | 1 | COMP-01 | unit | `python -m pytest tests/test_composer.py -k composable_from -v` | W0 | pending |
+| 05-01-02 | 01 | 1 | COMP-02 | unit | `python -m pytest tests/test_composer.py -k concatenate -v` | W0 | pending |
+| 05-01-03 | 01 | 1 | COMP-03 | unit | `python -m pytest tests/test_composer.py -k flags -v` | W0 | pending |
+| 05-01-04 | 01 | 1 | COMP-04 | unit | `python -m pytest tests/test_composer.py -k exclude -v` | W0 | pending |
+| 05-02-01 | 02 | 2 | SMPL-03 | integration | `python -m pytest tests/test_production_templates.py -k ct_tap -v` | W0 | pending |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+*Status: pending / green / red / flaky*
 
 ---
 
 ## Wave 0 Requirements
 
 - [ ] `tests/test_composer.py` — stubs for COMP-01, COMP-02, COMP-03, COMP-04
-- [ ] `tests/test_composite_integration.py` — stubs for SMPL-03 (CT TAP end-to-end)
+- [ ] `tests/test_production_templates.py` — stubs for SMPL-03 (CT TAP end-to-end, added to existing file)
 
 *Existing infrastructure (pytest, conftest, fixtures) covers framework needs.*
 
