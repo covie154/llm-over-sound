@@ -10,6 +10,7 @@ import pathlib
 import pytest
 
 from lib.templates.loader import load_template, discover_templates
+from lib.templates.registry import TemplateRegistry
 
 # Production templates root directory
 TEMPLATES_ROOT = pathlib.Path(__file__).parent.parent / "rpt_templates"
@@ -163,6 +164,97 @@ def test_ct_thorax_optional_fields():
     assert optional_fields == {"airways", "thyroid"}
 
 
+# ===== CT TAP Composite Tests =====
+
+
+def test_ct_tap_loads():
+    """CT TAP composite template loads via registry with correct study name."""
+    registry = TemplateRegistry(TEMPLATES_ROOT)
+    t = registry.get_template("ct tap")
+    assert t.schema.study_name == "CT Thorax, Abdomen and Pelvis"
+    assert "ct tap" in t.schema.aliases
+
+
+def test_ct_tap_field_count():
+    """CT TAP has 23 merged fields: 6 thorax + 16 AP + 1 composite bones."""
+    registry = TemplateRegistry(TEMPLATES_ROOT)
+    t = registry.get_template("ct tap")
+    assert len(t.schema.fields) == 23
+
+
+def test_ct_tap_field_order():
+    """CT TAP fields are thorax first, then AP, then composite bones."""
+    registry = TemplateRegistry(TEMPLATES_ROOT)
+    t = registry.get_template("ct tap")
+    field_names = [f.name for f in t.schema.fields]
+    # Thorax fields (minus bones, limited_abdomen)
+    assert field_names[:6] == [
+        "lungs", "pleura", "airways", "thyroid",
+        "mediastinum", "heart_great_vessels",
+    ]
+    # AP fields (minus bones, lung_bases) -- 16 fields
+    assert field_names[6:22] == [
+        "liver", "gallbladder", "cbd", "spleen",
+        "adrenals", "pancreas", "kidneys", "bowel",
+        "mesentery", "lymph_nodes", "bladder",
+        "uterus_ovaries", "prostate", "vessels",
+        "free_fluid", "soft_tissues",
+    ]
+    # Composite bones
+    assert field_names[22] == "bones"
+
+
+def test_ct_tap_no_excluded_fields():
+    """CT TAP does not contain lung_bases, limited_abdomen, or duplicate bones."""
+    registry = TemplateRegistry(TEMPLATES_ROOT)
+    t = registry.get_template("ct tap")
+    field_names = [f.name for f in t.schema.fields]
+    assert "lung_bases" not in field_names
+    assert "limited_abdomen" not in field_names
+    assert field_names.count("bones") == 1
+
+
+def test_ct_tap_groups_carried_forward():
+    """CT TAP carries forward gallbladder_cbd and spleen_adrenals_pancreas groups from CT AP."""
+    registry = TemplateRegistry(TEMPLATES_ROOT)
+    t = registry.get_template("ct tap")
+    group_names = {g.name for g in t.schema.groups}
+    assert "gallbladder_cbd" in group_names
+    assert "spleen_adrenals_pancreas" in group_names
+
+
+def test_ct_tap_sex_fields():
+    """CT TAP preserves sex-dependent pelvis fields from CT AP."""
+    registry = TemplateRegistry(TEMPLATES_ROOT)
+    t = registry.get_template("ct tap")
+    fields_by_name = {f.name: f for f in t.schema.fields}
+    assert fields_by_name["uterus_ovaries"].sex == "female"
+    assert fields_by_name["prostate"].sex == "male"
+
+
+def test_ct_tap_renders():
+    """CT TAP renders a complete report via render_report()."""
+    from lib.templates.renderer import render_report
+    registry = TemplateRegistry(TEMPLATES_ROOT)
+    t = registry.get_template("ct tap")
+    findings = {"lungs": "Right lower lobe consolidation.", "liver": "Hepatomegaly."}
+    technique = {}
+    report = render_report(t, findings, technique)
+    assert "### Thorax" in report or "Thorax" in report
+    assert "### Abdomen and Pelvis" in report or "Abdomen and Pelvis" in report
+    assert "Right lower lobe consolidation" in report
+    assert "Hepatomegaly" in report
+
+
+def test_ct_tap_composite_bones():
+    """CT TAP bones field has composite normal text covering full skeleton survey."""
+    registry = TemplateRegistry(TEMPLATES_ROOT)
+    t = registry.get_template("ct tap")
+    bones = next(f for f in t.schema.fields if f.name == "bones")
+    assert "No suspicious osseous lesion" in bones.normal
+    assert "No acute fracture" in bones.normal
+
+
 # ===== US HBS Tests =====
 
 
@@ -211,7 +303,7 @@ def test_us_hbs_optional_fields():
 def test_all_production_templates_load():
     """All production templates discover and load without errors."""
     paths = discover_templates(TEMPLATES_ROOT)
-    assert len(paths) == 4
+    assert len(paths) == 5  # 3 base + 1 structured + 1 composite (ct_tap)
 
     for path in paths:
         t = load_template(path)

@@ -159,6 +159,21 @@ def test_get_template_returns_loaded_template(registry):
 
 # -- Standalone import -------------------------------------------------------
 
+# -- Production composite aliases ---------------------------------------------
+
+TEMPLATES_ROOT = pathlib.Path(__file__).parent.parent / "rpt_templates"
+
+
+def test_registry_includes_composite_aliases():
+    """Registry built from production templates includes ct tap alias."""
+    registry = TemplateRegistry(TEMPLATES_ROOT)
+    aliases = registry.get_known_aliases()
+    assert "ct tap" in aliases
+    assert "ct thorax abdomen pelvis" in aliases
+
+
+# -- Standalone import -------------------------------------------------------
+
 def test_standalone_import():
     """FWRK-01: Template sub-package source has no ggwave/pyaudio imports.
 
