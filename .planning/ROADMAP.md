@@ -99,7 +99,7 @@ Plans:
 
 Plans:
 - [x] 05-01-PLAN.md — Schema extension, composer module, and composition unit tests
-- [ ] 05-02-PLAN.md — CT TAP template authoring, registry two-pass loading, and integration tests
+- [x] 05-02-PLAN.md — CT TAP template authoring, registry two-pass loading, and integration tests
 
 ### Phase 6: Pipeline Integration
 **Goal**: The template system is wired into the existing 5-stage backend pipeline so that ggwave messages trigger template-based report formatting end-to-end

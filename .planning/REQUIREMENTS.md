@@ -43,7 +43,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **SMPL-01**: CT abdomen and pelvis template with full organ-level fields, normal defaults, sex-dependent pelvis fields, and guidance section
 - [x] **SMPL-02**: CT thorax template with lungs, pleura, mediastinum/hila, heart/pericardium, limited abdomen, and bones fields
-- [ ] **SMPL-03**: CT thorax, abdomen and pelvis composite template referencing CT thorax + CT abdomen/pelvis base templates
+- [x] **SMPL-03**: CT thorax, abdomen and pelvis composite template referencing CT thorax + CT abdomen/pelvis base templates
 - [x] **SMPL-04**: US HBS template with liver, gallbladder/CBD, spleen, and pancreas fields including measurement placeholders
 
 ### Framework Integration
@@ -116,7 +116,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMP-04 | Phase 5 | Complete |
 | SMPL-01 | Phase 3 | Complete |
 | SMPL-02 | Phase 3 | Complete |
-| SMPL-03 | Phase 5 | Pending |
+| SMPL-03 | Phase 5 | Complete |
 | SMPL-04 | Phase 3 | Complete |
 | FWRK-01 | Phase 2 | Complete |
 | FWRK-02 | Phase 6 | Pending |
