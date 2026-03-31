@@ -78,3 +78,27 @@ def groups_template(renderer_fixtures_dir):
 def measurements_template(renderer_fixtures_dir):
     from lib.templates.loader import load_template
     return load_template(renderer_fixtures_dir / "measurements_minimal.rpt.md")
+
+
+@pytest.fixture
+def composite_fixtures_dir() -> pathlib.Path:
+    return FIXTURES_DIR / "composite"
+
+
+@pytest.fixture
+def composite_bases(composite_fixtures_dir):
+    """Load base templates for composition testing."""
+    from lib.templates.loader import load_template
+    base_a = load_template(composite_fixtures_dir / "base_a.rpt.md")
+    base_b = load_template(composite_fixtures_dir / "base_b.rpt.md")
+    return {
+        "composite/base_a.rpt.md": base_a,
+        "composite/base_b.rpt.md": base_b,
+    }
+
+
+@pytest.fixture
+def raw_composite(composite_fixtures_dir):
+    """Load the composite template (raw, pre-composition)."""
+    from lib.templates.loader import load_template
+    return load_template(composite_fixtures_dir / "composite_ab.rpt.md")
