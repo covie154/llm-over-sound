@@ -102,3 +102,16 @@ def raw_composite(composite_fixtures_dir):
     """Load the composite template (raw, pre-composition)."""
     from lib.templates.loader import load_template
     return load_template(composite_fixtures_dir / "composite_ab.rpt.md")
+
+
+@pytest.fixture
+def production_templates_dir() -> pathlib.Path:
+    """Path to the production templates directory."""
+    return pathlib.Path(__file__).parent.parent / "rpt_templates"
+
+
+@pytest.fixture
+def llm_pipeline(production_templates_dir):
+    """An LLMPipeline instance using production templates."""
+    from lib.pipeline import LLMPipeline
+    return LLMPipeline(str(production_templates_dir))
