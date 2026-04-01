@@ -1,0 +1,49 @@
+CLINICAL HISTORY
+
+__NOT_DOCUMENTED__
+
+TECHNIQUE
+
+__NOT_DOCUMENTED__
+
+COMPARISON
+
+None available.
+
+FINDINGS
+
+Liver: See below
+Gallbladder: __NOT_DOCUMENTED__
+CBD: __NOT_DOCUMENTED__
+Spleen: See below
+Adrenals: See below
+Pancreas: See below
+Kidneys: See below
+Bowel: __NOT_DOCUMENTED__
+Mesentery: __NOT_DOCUMENTED__
+Lymph nodes: __NOT_DOCUMENTED__
+Bladder: __NOT_DOCUMENTED__
+Uterus/Ovaries: __NOT_DOCUMENTED__
+Prostate: __NOT_DOCUMENTED__
+Lung bases: __NOT_DOCUMENTED__
+Free fluid: __NOT_DOCUMENTED__
+Bones: __NOT_DOCUMENTED__
+Soft tissues: __NOT_DOCUMENTED__
+
+### Key Findings
+
+Liver: Normal in size and attenuation. No focal lesion.
+
+Spleen: Unremarkable.
+
+Adrenals: Unremarkable.
+
+Pancreas: Unremarkable.
+
+Kidneys: No hydronephrosis or calculi.
+
+### Other Findings
+
+
+COMMENT
+(impression not generated)
