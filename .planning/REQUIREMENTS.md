@@ -49,7 +49,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Framework Integration
 
 - [x] **FWRK-01**: The template system (loader, registry, renderer) is callable as a standalone Python module for testing and research independent of the ggwave backend
-- [ ] **FWRK-02**: The template system integrates with the existing 5-stage backend pipeline -- called after the backend receives a ggwave message
+- [x] **FWRK-02**: The template system integrates with the existing 5-stage backend pipeline -- called after the backend receives a ggwave message
 - [x] **FWRK-03**: Pydantic models define the template metadata schema and validate frontmatter at load time
 - [x] **FWRK-04**: Pydantic models define the LLM findings output schema for constrained structured output
 
@@ -119,7 +119,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SMPL-03 | Phase 5 | Complete |
 | SMPL-04 | Phase 3 | Complete |
 | FWRK-01 | Phase 2 | Complete |
-| FWRK-02 | Phase 6 | Pending |
+| FWRK-02 | Phase 6 | Complete |
 | FWRK-03 | Phase 1 | Complete |
 | FWRK-04 | Phase 1 | Complete |
 

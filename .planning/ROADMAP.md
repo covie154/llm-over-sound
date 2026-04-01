@@ -111,7 +111,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — LLMPipeline fn-based routing, registry ownership, stage 2+4 wiring, backend.py env var switching, and integration tests
+- [x] 06-01-PLAN.md — LLMPipeline fn-based routing, registry ownership, stage 2+4 wiring, backend.py env var switching, and integration tests
 - [ ] 06-02-PLAN.md — Snapshot golden-file tests for all 4 templates and standalone render demo script
 
 ## Progress
@@ -126,4 +126,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Base Template Authoring | 2/2 | Complete   | 2026-03-29 |
 | 4. Report Renderer | 2/2 | Complete   | 2026-03-30 |
 | 5. Composite Templates | 0/2 | Not started | - |
-| 6. Pipeline Integration | 0/2 | Not started | - |
+| 6. Pipeline Integration | 1/2 | In Progress|  |
