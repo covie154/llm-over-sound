@@ -39,14 +39,14 @@ The LLM must never fabricate findings. Every extracted finding must trace to the
 
 - LLM prompt engineering and API integration — separate milestone
 - Frontend UI changes for template selection — separate milestone
-- ~~Automated testing harness~~ — pytest infrastructure created in Phase 1 (140 tests passing after Phase 5)
+- ~~Automated testing harness~~ — pytest infrastructure created in Phase 1 (161 tests passing after Phase 6)
 - MRI templates — CT and US first, MRI later
 - Sub-organ granularity — start organ-level, extend later
 
 ## Context
 
-- This is a brownfield project with an established audio transport layer. The 5-stage LLM pipeline exists but stages 1, 3, 4, 5 are stubs (NotImplementedError).
-- This milestone focuses exclusively on the template system — the `.md` files that define report structure, fields, and normal defaults. The LLM integration that consumes these templates is a separate concern.
+- This is a brownfield project with an established audio transport layer. The 5-stage LLM pipeline exists — stages 2 and 4 are now implemented (template retrieval and report rendering), while stages 1, 3, 5 remain stubs (NotImplementedError) pending LLM integration.
+- This milestone focused on the template system — schema, loader, registry, renderer, composite templates, and pipeline integration. Phase 6 completed the wiring: `fn='render'` routes through the real registry and renderer, `PIPELINE_MODE=llm` activates the pipeline in backend.py.
 - Templates live under `rpt_templates/` organized by modality (e.g. `rpt_templates/ct/`, `rpt_templates/us/`).
 - Combined studies reference base templates by path — the system loads and concatenates sections at runtime.
 - The radiologist's workflow: draft findings in point form or brief notes on AHK frontend → transmitted over ggwave → backend classifies study type, loads template, extracts findings via LLM, renders report → sends back over ggwave.
@@ -90,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-31 after Phase 5 completion*
+*Last updated: 2026-04-01 after Phase 6 completion*
