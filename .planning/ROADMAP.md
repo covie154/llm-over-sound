@@ -108,10 +108,11 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. A message received by the backend triggers study type classification, template lookup via the registry, and report rendering via the renderer
   2. The template system functions correctly when called from the pipeline (not just standalone) with no import or path resolution errors
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: TBD
+- [ ] 06-01-PLAN.md — LLMPipeline fn-based routing, registry ownership, stage 2+4 wiring, backend.py env var switching, and integration tests
+- [ ] 06-02-PLAN.md — Snapshot golden-file tests for all 4 templates and standalone render demo script
 
 ## Progress
 
@@ -125,4 +126,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Base Template Authoring | 2/2 | Complete   | 2026-03-29 |
 | 4. Report Renderer | 2/2 | Complete   | 2026-03-30 |
 | 5. Composite Templates | 0/2 | Not started | - |
-| 6. Pipeline Integration | 0/1 | Not started | - |
+| 6. Pipeline Integration | 0/2 | Not started | - |
