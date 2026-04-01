@@ -112,7 +112,7 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md — LLMPipeline fn-based routing, registry ownership, stage 2+4 wiring, backend.py env var switching, and integration tests
-- [ ] 06-02-PLAN.md — Snapshot golden-file tests for all 4 templates and standalone render demo script
+- [x] 06-02-PLAN.md — Snapshot golden-file tests for all 4 templates and standalone render demo script
 
 ## Progress
 
