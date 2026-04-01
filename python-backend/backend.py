@@ -7,6 +7,7 @@ Listens for ggwave audio messages from the AHK frontend, processes them
 through the report-formatting pipeline, and transmits responses back.
 """
 
+import os
 import sys
 import json
 import argparse
@@ -27,6 +28,7 @@ from lib import (
     handle_retransmission_request,
     list_devices,
     TestPipeline,
+    LLMPipeline,
 )
 from lib.config import INTER_CHUNK_DELAY
 
@@ -88,9 +90,14 @@ def main():
 
     log_session_start()
 
-    # Select the pipeline implementation
-    # Swap TestPipeline for LLMPipeline when the LLM stages are ready.
-    pipeline = TestPipeline()
+    # Select the pipeline implementation via PIPELINE_MODE env var
+    pipeline_mode = os.environ.get("PIPELINE_MODE", "test")
+    if pipeline_mode == "llm":
+        pipeline = LLMPipeline()
+        logger.info(f"Pipeline: LLMPipeline (mode={pipeline_mode})")
+    else:
+        pipeline = TestPipeline()
+        logger.info(f"Pipeline: TestPipeline (mode={pipeline_mode})")
 
     input_device_index = args.input_device
     output_device_index = args.output_device
