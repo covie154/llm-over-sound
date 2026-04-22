@@ -27,16 +27,12 @@ def main():
     payload = json.dumps({
         "study_type": "us hbs",
         "findings": {
-            "liver": "Normal in size and echotexture. No focal lesion.",
-            "gallbladder_cbd": (
-                "Gallbladder is well distended with no calculi. "
-                "CBD measures 4mm."
-            ),
-            "spleen": "Normal in size.",
-            "pancreas": "Visualised portions are unremarkable.",
+            "liver": "The liver is normal in size and echotexture. No focal lesion.",
+            "gallbladder_cbd": "Gallbladder is well distended with no calculi.\nCBD measures 4mm.",
+            "spleen": None,
+            "pancreas": None
         },
-        "technique": {"cbd_diameter_mm": "4"},
-        "rest_normal": False,
+        "technique": {"spleen_length_cm": "10.2"}
     })
 
     msg = {"id": "demo01", "fn": "render", "ct": payload}

@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # ===== Constants =====
 
 GUIDANCE_PATTERN = re.compile(
-    r"^## Guidance\s*\n.*?(?=^## |\Z)",
+    r"\n*^## Guidance\s*\n.*?(?=^## |\Z)",
     re.MULTILINE | re.DOTALL,
 )
 
@@ -249,7 +249,7 @@ class ReportRenderer:
 
     def _strip_guidance(self, body: str) -> str:
         """Remove the Guidance section from the body."""
-        return GUIDANCE_PATTERN.sub("", body)
+        return GUIDANCE_PATTERN.sub("\n\n", body)
 
     def _handle_impression(
         self,

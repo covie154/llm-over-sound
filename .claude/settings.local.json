@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(head:*)",
+      "Bash(grep:*)",
+      "WebSearch",
+      "Skill(gsd:map-codebase)",
+      "Bash(node:*)",
+      "Skill(gsd:plan-phase)",
+      "Bash(ls:*)"
+    ]
+  }
+}

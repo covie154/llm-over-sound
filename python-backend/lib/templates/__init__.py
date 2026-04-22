@@ -23,6 +23,7 @@ from .loader import LoadedTemplate, load_template, discover_templates
 from .composer import compose_template
 from .registry import TemplateRegistry
 from .renderer import ReportRenderer, FreeformRenderer, StructuredRenderer, render_report
+from .defaults import build_guidance, build_default_payload
 
 __all__ = [
     # Schema models
@@ -53,4 +54,7 @@ __all__ = [
     "FreeformRenderer",
     "StructuredRenderer",
     "render_report",
+    # Defaults
+    "build_guidance",
+    "build_default_payload",
 ]
