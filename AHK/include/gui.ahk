@@ -6,8 +6,8 @@ SelectAudioDevices() {
     global selectedSpeakerIndex, selectedMicrophoneIndex
     
     ; Get device counts
-    playbackCount := DllCall("ggwave_simple\ggwave_simple_get_playback_device_count", "Int")
-    captureCount := DllCall("ggwave_simple\ggwave_simple_get_capture_device_count", "Int")
+    playbackCount := DllCall("minimodem_simple\minimodem_simple_get_playback_device_count", "Int")
+    captureCount := DllCall("minimodem_simple\minimodem_simple_get_capture_device_count", "Int")
     
     if (playbackCount <= 0) {
         MsgBox("No playback devices found!", "Error", "Icon!")
@@ -22,7 +22,7 @@ SelectAudioDevices() {
     ; Get device names
     speakerNames := []
     Loop playbackCount {
-        namePtr := DllCall("ggwave_simple\ggwave_simple_get_playback_device_name", 
+        namePtr := DllCall("minimodem_simple\minimodem_simple_get_playback_device_name", 
             "Int", A_Index - 1, 
             "Ptr")
         if (namePtr) {
@@ -32,7 +32,7 @@ SelectAudioDevices() {
     
     micNames := []
     Loop captureCount {
-        namePtr := DllCall("ggwave_simple\ggwave_simple_get_capture_device_name", 
+        namePtr := DllCall("minimodem_simple\minimodem_simple_get_capture_device_name", 
             "Int", A_Index - 1, 
             "Ptr")
         if (namePtr) {
@@ -47,12 +47,14 @@ SelectAudioDevices() {
     ; Speaker selection
     deviceGui.AddText("xm", "Select Speaker (Output):")
     speakerList := deviceGui.AddListBox("xm w400 h120 vSpeakerChoice", speakerNames)
-    speakerList.Choose(1)
+    if (speakerNames.Length)
+        speakerList.Choose(1)
     
     ; Microphone selection
     deviceGui.AddText("xm y+15", "Select Microphone (Input):")
     micList := deviceGui.AddListBox("xm w400 h120 vMicrophoneChoice", micNames)
-    micList.Choose(1)
+    if (micNames.Length)
+        micList.Choose(1)
     
     ; Protocol selection
     deviceGui.AddText("xm y+15", "Select Protocol:")
