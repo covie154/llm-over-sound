@@ -27,7 +27,7 @@ above transport is reused almost verbatim.
 | Windows audio API | **WinMM** (`waveOut*`/`waveIn*`) | Ships with every Windows, statically linkable → single self-contained, copy-pasteable binary, no install. Throughput is set by baud, not the audio API. |
 | Packaging | **`minimodem_simple.dll`** mirroring `ggwave_simple.dll` API | AHK keeps its `DllCall` model; `chunking.ahk`, `compression.ahk`, `gui.ahk`, `msgid.ahk` reused nearly unchanged. |
 | Pi side | **Shared wrapper compiled as `.so` + `ctypes`** | One wrapper codebase, symmetric API on both ends; replaces the ggwave Python binding. |
-| Integrity | **Keep chunking + add per-chunk CRC32** | Reuses existing `id/ci/cc` chunk/reassembly/retransmit code; re-requests only corrupted chunks; robust on the noisier speaker/mic test rig. |
+| Integrity | **Single framed message + CRC32 (no chunking, v1)** | Latency-first: one transmission avoids the repeated per-chunk preamble (~0.5–1 s each) + inter-chunk delays. Message-level CRC32 detects corruption; a failed CRC triggers a whole-message resend. Chunking (~200-word chunks) deferred to v2. |
 | FFTW | **Static-link `fftw3f` (v1)** | `fsk.c` needs single-precision FFT; static link keeps the DLL self-contained. Goertzel rewrite deferred to v2. |
 | License | **GPLv3 accepted** for internal/research use | minimodem is GPLv3 (ggwave was MIT); a DLL built from its source is GPLv3 and loads into the AHK process. Noted before any distribution. |
 | Baud rate | **Configurable end-to-end**, default **1200** | 1200 suits the current speaker/mic rig; raise to 4800–9600 on the wired link. User is unsure of the optimum, so it must be tunable without recompiling. |
@@ -45,8 +45,12 @@ fixed ~0.5–1 s carrier/preamble per transmission.
 | 4800 | 480 | ~1 s  | wired line-out → line-in |
 | 9600 | 960 | ~0.5 s| clean wired cable |
 
-Because transfers are seconds-scale, CRC + ARQ (detect & re-request) is the right
-v1 integrity strategy; full round-trips are cheap.
+Because transfers are seconds-scale **and latency matters**, v1 sends each report
+as a **single framed transmission** (no chunking) with a message-level CRC32; a
+failed CRC triggers a full resend. This avoids the per-chunk preamble (~0.5–1 s
+each) and inter-chunk delays that multiple chunks would add. Chunking returns in
+v2 with large (~200-word ≈ ~1 KB) chunks once payloads grow long enough to
+warrant it.
 
 ## Architecture
 
@@ -128,9 +132,10 @@ wrapper file.
 - `main_dll.ahk` — `init` call passes `BAUD_RATE` instead of protocol id.
 - `config.ahk` — add `BAUD_RATE` global (default 1200), kept alongside existing
   ALL_CAPS config; this is the single tuning knob.
-- `chunking.ahk` — raise chunk size (140-byte cap gone); add `crc` field per
-  chunk; on receive, validate CRC and route mismatches through the existing
-  retransmit path.
+- `chunking.ahk` — v1: send each message as a **single frame** (`ci=0`, `cc=1`),
+  no splitting; add a message-level `crc` field; on receive, validate CRC and
+  route a mismatch through the existing retransmit path (full-message resend).
+  The split/reassemble code paths are retained but dormant, ready for v2 chunking.
 - `compression.ahk` — add CRC32 helper via `ntdll!RtlComputeCrc32`.
 - `gui.ahk`, `msgid.ahk` — unchanged.
 
@@ -139,33 +144,33 @@ wrapper file.
   surface as the wrapper; replaces the ggwave binding in the transport path.
 - `lib/audio.py` — device enumeration via the wrapper's device-count/name calls
   (PyAudio no longer required for the transport path).
-- `lib/chunking.py` — raise chunk size; add `crc` (CRC32 via `zlib.crc32`);
-  validate on reassembly; honor retransmit requests for failed chunks.
+- `lib/chunking.py` — v1: single-frame send (`ci=0`, `cc=1`); add `crc` (CRC32 via
+  `zlib.crc32`); validate on receive; honor full-message retransmit requests.
+  Split/reassemble retained but dormant for v2.
 - `backend.py` — transport init swaps ggwave → minimodem; `--baud` CLI argument
   (default 1200) plus existing `--volume`. `process_input()` pipeline untouched.
 
 ### 4. Message protocol (additive)
 - Keep LZNT1 compression, Base62 encoding (keeps payload newline-safe), and the
-  `id`/`fn`/`ct`/`st`/`ci`/`cc` JSON schema.
-- New field **`crc`** (CRC32 of the chunk's `ct`) on every chunk.
+  `id`/`fn`/`ct`/`st`/`ci`/`cc` JSON schema (`ci=0`, `cc=1` in v1).
+- New field **`crc`** (CRC32 of `ct`) on every message.
 - Framing: newline-delimited JSON messages over the FSK byte stream.
-- Chunk size raised from ~140 bytes to a larger target (tuned to minimize
-  per-chunk preamble overhead); exact value set during plan/execution with a
-  loopback test.
+- v1 sends the whole compressed report in a single frame — no size cap (ggwave's
+  ~140-byte ceiling is gone). v2 reintroduces chunking with large (~200-word ≈
+  ~1 KB) chunks for very long payloads.
 
 ## Data flow (send path, unchanged above transport)
 1. User draft → `msgid` + JSON dict.
-2. `ChunkMessage`: LZNT1 compress whole payload → Base62 → split into chunks →
-   per chunk attach `ci`/`cc`/**`crc`**.
-3. Each chunk JSON → `minimodem_simple_send` → FSK audio.
+2. LZNT1 compress whole payload → Base62 → wrap as a single frame
+   (`ci=0`, `cc=1`) + **`crc`** (CRC32 of `ct`).
+3. Frame JSON → `minimodem_simple_send` → FSK audio.
 4. Receiver RX thread decodes bytes → newline-framed JSON → `receive()` drains →
-   CRC check per chunk → buffer by `id` → reassemble when all `cc` present →
-   Base62 decode → LZNT1 decompress → deliver. Missing/bad chunk → retransmit
-   request (existing path).
+   CRC check → Base62 decode → LZNT1 decompress → deliver. CRC mismatch or
+   timeout → full-message retransmit request (existing path).
 
 ## Error handling
-- **CRC mismatch:** drop chunk, request retransmit by `id`+`ci` (existing
-  mechanism); timeout → re-request; do not surface partial reports.
+- **CRC mismatch:** discard the frame, request a full retransmit by `id` (existing
+  mechanism); timeout → re-request; never surface a partial/corrupt report.
 - **Audio device open failure:** wrapper returns negative + `get_error()` string;
   AHK shows `MsgBox`, Python logs and exits per existing patterns.
 - **Carrier loss / decode noise:** `fsk_find_frame` confidence already filters
@@ -177,12 +182,16 @@ wrapper file.
    cable; verify byte-exact round trip across baud rates.
 2. **Cross-machine round trip** — AHK ↔ Pi over the USB audio cable; calibrate
    volume per direction first.
-3. **Chunked report payloads** — report-length messages; induce corruption to
-   confirm CRC detection + targeted retransmit.
+3. **Report-length payloads** — full reports in a single frame; induce corruption
+   to confirm message-level CRC detection + full retransmit.
 4. **Baud sweep** — confirm `BAUD_RATE`/`--baud` changes apply without recompile
    and both ends must match.
 
 ## Out of scope / v2
+- **Chunking for long payloads** — reintroduce `id/ci/cc` splitting with large
+  (~200-word ≈ ~1 KB) chunks once reports exceed a comfortable single-frame size;
+  lets the receiver re-request only the corrupted chunk instead of the whole
+  message. Split/reassemble code stays in place (dormant) from v1 to ease this.
 - **Reed-Solomon-per-chunk FEC** (e.g. RS(255,223)) — corrects burst errors
   without a round-trip; add when measured chunk-loss on the acoustic rig makes
   retransmit round-trips dominate latency. RS code can be lifted from ggwave or
