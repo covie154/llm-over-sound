@@ -58,6 +58,7 @@ typedef struct {
     char        *out_buf[MM_NHDR];
     size_t       out_buf_cap;        /* bytes capacity of each out_buf */
     unsigned int out_next;           /* next header to (re)use */
+    size_t       out_fill_frames;    /* frames staged in out_buf[out_next], not yet queued */
 
     /* capture */
     HWAVEIN      hwi;
@@ -97,6 +98,8 @@ mm_make_format( WAVEFORMATEX *wfx, unsigned int rate, unsigned int channels,
 }
 
 
+static int mm_winmm_queue_current( winmm_state *w );   /* fwd decl (defined below) */
+
 /* ---------------------------------------------------------------- close */
 static void
 sa_winmm_close( simpleaudio *sa )
@@ -120,6 +123,8 @@ sa_winmm_close( simpleaudio *sa )
         for ( int i=0; i<MM_NHDR; i++ ) { free(w->in_buf[i]); w->in_buf[i] = NULL; }
     } else {
         if ( w->hwo ) {
+            /* flush any trailing partial staging buffer, then drain */
+            mm_winmm_queue_current(w);
             /* drain: wait for all in-flight headers to finish */
             for ( int i=0; i<MM_NHDR; i++ ) {
                 while ( (w->out_hdr[i].dwFlags & WHDR_PREPARED) &&
@@ -144,7 +149,42 @@ sa_winmm_close( simpleaudio *sa )
 
 
 /* ---------------------------------------------------------------- write */
-/* Blocking: returns only after all nframes have been queued to waveOut. */
+/* Queue the current staging buffer (out_buf[out_next], out_fill_frames frames)
+ * to waveOut and advance the ring. The slot was already waited free in
+ * sa_winmm_write before staging began. No-op when nothing is staged. */
+static int
+mm_winmm_queue_current( winmm_state *w )
+{
+    if ( w->out_fill_frames == 0 )
+        return 0;
+
+    size_t dev_framesize = w->use_s16 ? sizeof(short)*w->channels
+                                      : sizeof(float)*w->channels;
+    WAVEHDR *h = &w->out_hdr[w->out_next];
+    h->lpData = w->out_buf[w->out_next];
+    h->dwBufferLength = (DWORD)(w->out_fill_frames * dev_framesize);
+    h->dwFlags = 0;
+    if ( waveOutPrepareHeader(w->hwo, h, sizeof(WAVEHDR)) != MMSYSERR_NOERROR )
+        return -1;
+    if ( waveOutWrite(w->hwo, h, sizeof(WAVEHDR)) != MMSYSERR_NOERROR ) {
+        waveOutUnprepareHeader(w->hwo, h, sizeof(WAVEHDR));
+        return -1;
+    }
+    w->out_next = (w->out_next + 1) % MM_NHDR;
+    w->out_fill_frames = 0;
+    return 0;
+}
+
+/* COALESCING write: minimodem's tone generator calls write() once per bit
+ * (~10 tiny writes/byte). Issuing one waveOutWrite per call saturated the
+ * 4-deep ring instantly, so every subsequent bit blocked on out_event — and
+ * that wait is gated by the Windows multimedia timer (~7-15 ms), collapsing
+ * throughput to ~1 bit per timer tick regardless of baud (the 35 s / 476-byte,
+ * baud-independent symptom). Instead we APPEND incoming frames into the current
+ * ring buffer until it fills, then queue one large buffer. waveOut then plays
+ * continuously and the producer only blocks when the whole ring (~1 s) is
+ * in-flight — so wall-clock tracks the true audio duration and baud finally
+ * matters. mm_winmm_drain() flushes the trailing partial buffer. */
 static ssize_t
 sa_winmm_write( simpleaudio *sa, void *buf, size_t nframes )
 {
@@ -152,33 +192,36 @@ sa_winmm_write( simpleaudio *sa, void *buf, size_t nframes )
     if ( !w || w->is_record )
         return -1;
 
-    size_t framesize = sa->backend_framesize;     /* bytes per frame (caller's format) */
-    size_t written = 0;
+    size_t framesize = sa->backend_framesize;     /* caller's frame (float) size */
+    size_t dev_framesize = w->use_s16 ? sizeof(short)*w->channels
+                                      : sizeof(float)*w->channels;
+    size_t cap_frames = w->out_buf_cap / dev_framesize;
     const char *src = (const char *)buf;
+    size_t written = 0;
 
     while ( written < nframes ) {
-        WAVEHDR *h = &w->out_hdr[w->out_next];
-
-        /* wait until this header is free (done or never used) */
-        while ( (h->dwFlags & WHDR_PREPARED) && !(h->dwFlags & WHDR_DONE) )
-            WaitForSingleObject(w->out_event, INFINITE);
-
-        if ( h->dwFlags & WHDR_PREPARED ) {
-            waveOutUnprepareHeader(w->hwo, h, sizeof(WAVEHDR));
-            h->dwFlags = 0;
+        /* Starting a fresh staging buffer: wait until this ring slot is free
+         * (its prior contents finished playing) BEFORE writing into it. */
+        if ( w->out_fill_frames == 0 ) {
+            WAVEHDR *h = &w->out_hdr[w->out_next];
+            while ( (h->dwFlags & WHDR_PREPARED) && !(h->dwFlags & WHDR_DONE) )
+                WaitForSingleObject(w->out_event, INFINITE);
+            if ( h->dwFlags & WHDR_PREPARED ) {
+                waveOutUnprepareHeader(w->hwo, h, sizeof(WAVEHDR));
+                h->dwFlags = 0;
+            }
         }
 
-        size_t cap_frames = w->out_buf_cap / (w->use_s16 ? sizeof(short)*w->channels
-                                                          : sizeof(float)*w->channels);
+        size_t room = cap_frames - w->out_fill_frames;
         size_t chunk = nframes - written;
-        if ( chunk > cap_frames )
-            chunk = cap_frames;
+        if ( chunk > room )
+            chunk = room;
 
-        /* copy / convert into the header's device buffer */
+        /* append into the current staging buffer at the out_fill_frames offset */
         if ( w->use_s16 ) {
-            /* caller buffer is float (simpleaudio float format) -> S16 */
             const float *fsrc = (const float *)(src + written * framesize);
-            short *dst = (short *)w->out_buf[w->out_next];
+            short *dst = (short *)w->out_buf[w->out_next]
+                         + w->out_fill_frames * w->channels;
             size_t nsamp = chunk * w->channels;
             for ( size_t i=0; i<nsamp; i++ ) {
                 float v = fsrc[i];
@@ -186,27 +229,40 @@ sa_winmm_write( simpleaudio *sa, void *buf, size_t nframes )
                 if ( v < -1.0f ) v = -1.0f;
                 dst[i] = (short)(v * 32767.0f);
             }
-            h->dwBufferLength = (DWORD)(nsamp * sizeof(short));
         } else {
-            memcpy(w->out_buf[w->out_next], src + written * framesize,
-                   chunk * framesize);
-            h->dwBufferLength = (DWORD)(chunk * framesize);
+            memcpy((char *)w->out_buf[w->out_next] + w->out_fill_frames * dev_framesize,
+                   src + written * framesize, chunk * dev_framesize);
         }
-
-        h->lpData = w->out_buf[w->out_next];
-        h->dwFlags = 0;
-        if ( waveOutPrepareHeader(w->hwo, h, sizeof(WAVEHDR)) != MMSYSERR_NOERROR )
-            return -1;
-        if ( waveOutWrite(w->hwo, h, sizeof(WAVEHDR)) != MMSYSERR_NOERROR ) {
-            waveOutUnprepareHeader(w->hwo, h, sizeof(WAVEHDR));
-            return -1;
-        }
-
+        w->out_fill_frames += chunk;
         written += chunk;
-        w->out_next = (w->out_next + 1) % MM_NHDR;
+
+        if ( w->out_fill_frames == cap_frames ) {
+            if ( mm_winmm_queue_current(w) < 0 )
+                return -1;
+        }
     }
 
     return (ssize_t)nframes;
+}
+
+/* Flush the trailing partial buffer and block until ALL queued audio has
+ * finished playing. Called by minimodem_simple_send() after mm_tx_bytes so the
+ * transmission is fully emitted before is_transmitting clears. Exported (not
+ * static) — declared in minimodem_simple.c under _WIN32. Returns 0 / -1. */
+int
+mm_winmm_drain( simpleaudio *sa )
+{
+    winmm_state *w = (winmm_state *)sa->backend_handle;
+    if ( !w || w->is_record )
+        return -1;
+    if ( mm_winmm_queue_current(w) < 0 )
+        return -1;
+    for ( int i=0; i<MM_NHDR; i++ ) {
+        while ( (w->out_hdr[i].dwFlags & WHDR_PREPARED) &&
+               !(w->out_hdr[i].dwFlags & WHDR_DONE) )
+            WaitForSingleObject(w->out_event, 100);
+    }
+    return 0;
 }
 
 

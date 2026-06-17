@@ -186,6 +186,7 @@ extern int         mm_playback_device_count(void);
 extern int         mm_capture_device_count(void);
 extern const char *mm_playback_device_name(int deviceId);
 extern const char *mm_capture_device_name(int deviceId);
+extern int         mm_winmm_drain(simpleaudio *sa);   /* flush + wait for TX playout */
 #endif
 
 MINIMODEM_SIMPLE_API int minimodem_simple_get_playback_device_count(void)
@@ -314,9 +315,19 @@ MINIMODEM_SIMPLE_API int minimodem_simple_send(const char *message, int volume)
     g.is_transmitting = 1;
     pthread_mutex_unlock(&g.mutex);
 
-    /* Modulate the caller's bytes to waveOut (blocks until drained by the
-     * WinMM/ALSA backend's synchronous write). */
+    /* Modulate the caller's bytes to waveOut. On Windows the WinMM write()
+     * coalesces into the ring and returns BEFORE the audio has played out, so
+     * we must drain explicitly below. On Linux ALSA/Pulse write() blocks to
+     * completion, so no drain is needed. */
     int rc = mm_tx_bytes(&g.ctx, (const unsigned char *)message, strlen(message));
+
+#ifdef _WIN32
+    /* Flush the trailing partial buffer and wait for the full FSK signal to
+     * finish playing before is_transmitting clears (so the RX thread keeps
+     * discarding our own transmission, Pitfall 3). */
+    if ( rc >= 0 )
+        mm_winmm_drain(g.ctx.sa_out);
+#endif
 
     pthread_mutex_lock(&g.mutex);
     g.is_transmitting = 0;
