@@ -169,5 +169,5 @@ Plans:
 - [x] 07-01-PLAN.md — minimodem-wrapper scaffold + minimodem.c decomposition (ctx struct / mm_build_config / mm_tx_bytes / mm_rx_step) + WinMM backend + dependency-free DLL build
 - [x] 07-02-PLAN.md — Public API bodies + background RX thread + newline-framed queue; Wave 0 gate: byte-exact loopback self-test + cross-language CRC32 agreement vector
 - [x] 07-03-PLAN.md — AHK frontend: load minimodem_simple.dll, BAUD_RATE, Crc32Str, single-frame + crc send/receive with full retransmit
-- [ ] 07-04-PLAN.md — Python backend: lib/minimodem.py ctypes binding, crc32_str, single-frame + crc, --baud (remove --protocol/ggwave/pyaudio)
+- [x] 07-04-PLAN.md — Python backend: lib/minimodem.py ctypes binding, crc32_str, single-frame + crc, --baud (remove --protocol/ggwave/pyaudio)
 - [ ] 07-05-PLAN.md — Build .so on Pi, cross-machine round trip, corruption + baud sweep, dependency-walker check, retire ggwave_simple.dll + SDL2.dll

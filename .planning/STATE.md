@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-03-PLAN.md
+stopped_at: Completed 07-04-PLAN.md
 last_updated: "2026-06-17T04:30:00.000Z"
-last_activity: 2026-06-17 -- Completed 07-03 (AHK frontend transport swap to minimodem single-frame + CRC32)
+last_activity: 2026-06-17 -- Completed 07-04 (Python backend transport swap to minimodem ctypes binding, single-frame + CRC32)
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 17
-  completed_plans: 15
-  percent: 88
+  completed_plans: 16
+  percent: 94
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 ## Current Position
 
 Phase: 07 (replace-ggwave-with-minimodem-both-sides) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Executing Phase 07
-Last activity: 2026-06-17 -- Completed 07-03 (AHK frontend transport swap to minimodem single-frame + CRC32)
+Last activity: 2026-06-17 -- Completed 07-04 (Python backend transport swap to minimodem ctypes binding, single-frame + CRC32)
 
-Progress: [██████░░░░] 60%
+Progress: [█████████░] 94%
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Progress: [██████░░░░] 60%
 | Phase 07 P01 | 20min | 3 tasks | 19 files |
 | Phase 07 P02 | 40min | 3 tasks | 6 files |
 | Phase 07 P03 | 25min | 2 tasks | 5 files |
+| Phase 07 P04 | 7min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,10 @@ Recent decisions affecting current work:
 - [Phase 07]: AHK receive verifies CRC before surfacing; mismatch -> discard + full-message retransmit (ci=[0]), never displays a corrupt report (medico-legal)
 - [Phase 07]: BAUD_RATE global (default 1200) in config.ahk passed to minimodem_simple_init; old protocol-id arg is now baud
 - [Phase 07]: AHK CRC compared numerically ((received+0) != expected) and retx frames newline-terminated to match wrapper framing (deviations, Rules 2+3)
+- [Phase 07]: Python lib/minimodem.py ctypes binding sets explicit restype/argtypes on all 12 exports; receive() uses a sized create_string_buffer (Security: signature mismatch -> memory corruption)
+- [Phase 07]: backend.py transport swapped to minimodem (no ggwave/pyaudio); --baud (default 1200) replaces -p/--protocol; receive loop sleeps ~10ms between empty polls (no busy-spin); pipeline call UNCHANGED
+- [Phase 07]: Binding searches BOTH libminimodem_simple.so and minimodem_simple.so (CMake PREFIX "" emits minimodem_simple.so) (Rule 1 bug)
+- [Phase 07]: A7 -- removing -p/--protocol breaks any external Pi service unit invoking it; flagged in code + startup log (cannot verify from repo)
 
 ### Roadmap Evolution
 
@@ -125,5 +130,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-17T04:30:00.000Z
-Stopped at: Completed 07-03-PLAN.md
+Stopped at: Completed 07-04-PLAN.md
 Resume file: None
