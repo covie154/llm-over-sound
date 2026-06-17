@@ -3,7 +3,7 @@
 #Requires AutoHotkey v2.0
 
 SelectAudioDevices() {
-    global selectedSpeakerIndex, selectedMicrophoneIndex
+    global selectedSpeakerIndex, selectedMicrophoneIndex, BAUD_RATE
     
     ; Get device counts
     playbackCount := DllCall("minimodem_simple\minimodem_simple_get_playback_device_count", "Int")
@@ -56,11 +56,10 @@ SelectAudioDevices() {
     if (micNames.Length)
         micList.Choose(1)
     
-    ; Protocol selection
-    deviceGui.AddText("xm y+15", "Select Protocol:")
-    protocols := ["Audible Normal", "Audible Fast", "Audible Fastest", 
-                  "Ultrasound Normal", "Ultrasound Fast", "Ultrasound Fastest"]
-    protocolList := deviceGui.AddDropDownList("xm w400 vProtocolChoice Choose2", protocols)
+    ; Baud rate (minimodem FSK) — tunable; both ends MUST match
+    deviceGui.AddText("xm y+15", "Baud rate (both ends must match):")
+    baudEdit := deviceGui.AddEdit("xm w400 vBaudChoice", String(BAUD_RATE))
+    deviceGui.AddText("xm y+3 cGray", "e.g. 1200 (speaker/mic) | 4800-9600 (wired line-in/out)")
     
     ; Buttons
     deviceGui.AddButton("xm y+20 w100", "OK").OnEvent("Click", OnOK)
@@ -69,6 +68,13 @@ SelectAudioDevices() {
     dialogResult := false
     
     OnOK(*) {
+        global BAUD_RATE
+        baudText := Trim(baudEdit.Value)
+        if (!IsInteger(baudText) || (baudText + 0) <= 0) {
+            MsgBox("Enter a valid baud rate (positive integer, e.g. 1200 or 9600).", "Invalid baud", "Icon!")
+            return
+        }
+        BAUD_RATE := baudText + 0
         dialogResult := true
         selectedSpeakerIndex := speakerList.Value - 1
         selectedMicrophoneIndex := micList.Value - 1
