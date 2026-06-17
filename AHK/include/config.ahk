@@ -1,9 +1,9 @@
 ; ==================== Global Configuration ====================
-; Shared constants and global variables for the ggwave AHK frontend.
+; Shared constants and global variables for the minimodem AHK frontend.
 #Requires AutoHotkey v2.0
 
 ; ==================== Global Variables ====================
-global ggwaveDll := ""
+global minimodemDll := ""
 global selectedSpeakerIndex := 0
 global selectedMicrophoneIndex := 0
 global isInitialized := false
@@ -13,11 +13,17 @@ global messageCounter := 0  ; For additional uniqueness
 global COMPRESSION_THRESHOLD := 100  ; Only compress messages longer than this (in characters)
 global COMPRESSION_ENGINE := 2       ; COMPRESSION_FORMAT_LZNT1=2, COMPRESSION_FORMAT_XPRESS=3, COMPRESSION_FORMAT_XPRESS_HUFF=4
 
+; ==================== Transport Configuration ====================
+global BAUD_RATE := 1200              ; minimodem FSK baud rate (link parameter; both ends MUST match)
+
 ; ==================== Chunking Configuration ====================
-global GGWAVE_PAYLOAD_LIMIT := 140   ; Max bytes per ggwave transmission
-global CHUNK_DATA_SIZE := 70          ; Max base64 content chars per chunk
-global INTER_CHUNK_DELAY := 200       ; Milliseconds between chunk transmissions
-global CHUNK_REASSEMBLY_TIMEOUT := 30000  ; Milliseconds before requesting retransmission
+; NOTE (Phase 7, v1): chunking is DORMANT. The active transport sends a single
+; frame (ci=0, cc=1) with a CRC32 field. The constants below are retained for the
+; dormant split/reassemble code path, reserved for v2 chunking.
+global GGWAVE_PAYLOAD_LIMIT := 140   ; (dormant) Max bytes per legacy transmission
+global CHUNK_DATA_SIZE := 70          ; (dormant) Max base64 content chars per chunk
+global INTER_CHUNK_DELAY := 200       ; (dormant) Milliseconds between chunk transmissions
+global CHUNK_REASSEMBLY_TIMEOUT := 30000  ; (dormant) Milliseconds before requesting retransmission
 
 ; ==================== Chunk Buffers ====================
 global chunkReceiveBuffer := Map()    ; {msgID: Map("chunks",Map(), "cc",N, "meta",Map(), "timestamp",tick)}

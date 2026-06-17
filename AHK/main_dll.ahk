@@ -1,4 +1,4 @@
-; AHK V2 Script — ggwave Direct DLL Integration
+; AHK V2 Script — minimodem Direct DLL Integration
 ; Entrypoint: loads modules and runs the main loop.
 #Requires AutoHotkey v2.0
 
@@ -16,40 +16,41 @@
 Main()
 
 Main() {
-    global selectedSpeakerIndex, selectedMicrophoneIndex, isInitialized
-    
+    global selectedSpeakerIndex, selectedMicrophoneIndex, isInitialized, BAUD_RATE
+
     ; Load the DLL
-    if (!LoadGGWaveDll()) {
-        MsgBox("Failed to load ggwave_simple.dll`n`nMake sure the DLL is in the same folder as this script.", "Error", "Icon!")
+    if (!LoadMinimodemDll()) {
+        MsgBox("Failed to load minimodem_simple.dll`n`nMake sure the DLL is in the same folder as this script.", "Error", "Icon!")
         ExitApp()
     }
-    
+
     ; Show audio device selection dialog
     if (!SelectAudioDevices()) {
-        UnloadGGWaveDll()
+        UnloadMinimodemDll()
         ExitApp()
     }
-    
-    ; Initialize ggwave with selected devices
-    ; Protocol 1 = AUDIBLE_FAST (good balance of speed and reliability)
-    result := DllCall("ggwave_simple\ggwave_simple_init", 
+
+    ; Initialize minimodem with selected devices.
+    ; The old ggwave protocol-id parameter is now the FSK baud rate (link
+    ; parameter; both ends MUST match — see BAUD_RATE in config.ahk).
+    result := DllCall("minimodem_simple\minimodem_simple_init",
         "Int", selectedSpeakerIndex,
         "Int", selectedMicrophoneIndex,
-        "Int", 1,  ; Protocol: AUDIBLE_FAST
+        "Int", BAUD_RATE,  ; FSK baud rate
         "Int")
-    
+
     if (result < 0) {
-        errorMsg := GetGGWaveError()
-        MsgBox("Failed to initialize ggwave: " . errorMsg, "Error", "Icon!")
-        UnloadGGWaveDll()
+        errorMsg := GetMinimodemError()
+        MsgBox("Failed to initialize minimodem: " . errorMsg, "Error", "Icon!")
+        UnloadMinimodemDll()
         ExitApp()
     }
-    
+
     isInitialized := true
-    
+
     ; Initialize logging
     InitializeLog()
-    LogMessage("SESSION", "Application started - Speaker: " . selectedSpeakerIndex . ", Mic: " . selectedMicrophoneIndex)
+    LogMessage("SESSION", "Application started - Speaker: " . selectedSpeakerIndex . ", Mic: " . selectedMicrophoneIndex . ", Baud: " . BAUD_RATE)
     
     ; Start the receive monitoring timer
     SetTimer(ProcessAudio, 10)  ; Process audio every 10ms
@@ -103,11 +104,11 @@ Cleanup() {
     SetTimer(ProcessAudio, 0)  ; Stop the timer
     
     if (isInitialized) {
-        DllCall("ggwave_simple\ggwave_simple_cleanup")
+        DllCall("minimodem_simple\minimodem_simple_cleanup")
         isInitialized := false
     }
-    
-    UnloadGGWaveDll()
+
+    UnloadMinimodemDll()
 }
 
 ; ==================== Hotkeys ====================

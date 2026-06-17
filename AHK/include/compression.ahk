@@ -2,6 +2,30 @@
 ; LZNT1 compression/decompression and Base64 encoding/decoding via Windows APIs.
 #Requires AutoHotkey v2.0
 
+; ==================== CRC32 Integrity (Phase 7) ====================
+; Crc32Str: CRC32 of a UTF-8 string, matching Python zlib.crc32.
+;
+; Pinned per 07-RESEARCH.md / 07-CONTEXT.md (medico-legal integrity, Pitfall 4):
+; the crc field on every message is CRC32 over the UTF-8 bytes of the `ct` string,
+; standard reflected CRC-32 (poly 0xEDB88320, init/xorout 0xFFFFFFFF).
+; ntdll!RtlComputeCrc32(0, data, len) implements exactly this and equals
+; Python zlib.crc32. Copied verbatim from minimodem-wrapper/test/crc_vector_test.ahk,
+; which is proven against the shared vector ("123456789" -> 0xCBF43926).
+; If you change this, the Python crc32_str MUST change to match or every message
+; fails its CRC check and retransmits forever.
+Crc32Str(str) {
+    ; StrPut returns the count INCLUDING the null terminator; exclude it.
+    utf8Size := StrPut(str, "UTF-8") - 1
+    if (utf8Size <= 0) {
+        return 0
+    }
+    buf := Buffer(utf8Size, 0)
+    StrPut(str, buf, "UTF-8")
+    ; RtlComputeCrc32(DWORD initial, PVOID data, INT length) -> DWORD
+    crc := DllCall("ntdll\RtlComputeCrc32", "UInt", 0, "Ptr", buf.Ptr, "Int", utf8Size, "UInt")
+    return crc
+}
+
 CompressString(str) {
     global COMPRESSION_ENGINE
     
