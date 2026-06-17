@@ -3,7 +3,8 @@ lib — shared modules for the ggwave radiology backend.
 """
 
 from .config import logger, truncate_for_log, log_session_start, log_session_end
-from .compression import lznt1_compress, lznt1_decompress
+from .compression import lznt1_compress, lznt1_decompress, crc32_str
+from . import minimodem
 from .chunking import (
     chunk_message,
     handle_received_chunk,
@@ -40,6 +41,9 @@ __all__ = [
     # compression
     "lznt1_compress",
     "lznt1_decompress",
+    "crc32_str",
+    # transport binding
+    "minimodem",
     # chunking
     "chunk_message",
     "handle_received_chunk",

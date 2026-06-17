@@ -1,45 +1,51 @@
 """
-Audio device enumeration and PyAudio helpers.
+Audio device enumeration via the minimodem wrapper.
+
+PyAudio has left the transport path (Phase 7): device enumeration now goes
+through the wrapper's playback/capture device count/name calls instead of
+``pyaudio.PyAudio()``. The printed format is preserved so ``--list`` output
+stays familiar.
 """
 
-import pyaudio
+from . import minimodem
 
 
-def list_devices(pa: pyaudio.PyAudio):
-    """List all available audio devices to stdout."""
+def list_devices():
+    """List available audio devices (via the minimodem wrapper) to stdout.
+
+    Requires the wrapper to be initialized (``minimodem.init(...)``) so the
+    underlying audio backend has enumerated its devices.
+    """
     print("\nAvailable Audio Devices:")
     print("=" * 80)
 
-    device_count = pa.get_device_count()
     try:
-        default_input = pa.get_default_input_device_info()["index"]
-    except IOError:
-        default_input = None
+        playback_count = minimodem.get_playback_device_count()
+    except Exception:
+        playback_count = 0
     try:
-        default_output = pa.get_default_output_device_info()["index"]
-    except IOError:
-        default_output = None
+        capture_count = minimodem.get_capture_device_count()
+    except Exception:
+        capture_count = 0
 
-    for i in range(device_count):
+    print("Playback (output) devices:")
+    if playback_count <= 0:
+        print("  (none)")
+    for i in range(playback_count):
         try:
-            info = pa.get_device_info_by_index(i)
-            markers: list[str] = []
-            if i == default_input:
-                markers.append("DEFAULT INPUT")
-            if i == default_output:
-                markers.append("DEFAULT OUTPUT")
-            marker_str = f" [{', '.join(markers)}]" if markers else ""
-
-            in_ch = info["maxInputChannels"]
-            out_ch = info["maxOutputChannels"]
-            if in_ch > 0 or out_ch > 0:
-                direction: list[str] = []
-                if in_ch > 0:
-                    direction.append(f"In:{in_ch}")
-                if out_ch > 0:
-                    direction.append(f"Out:{out_ch}")
-                print(f"Device {i}: {info['name']}{marker_str}")
-                print(f"  Channels: {', '.join(direction)}  |  Sample Rate: {info['defaultSampleRate']:.0f} Hz")
-                print()
+            name = minimodem.get_playback_device_name(i)
         except Exception:
-            pass
+            name = "<error>"
+        print(f"  Device {i}: {name}  |  Out")
+    print()
+
+    print("Capture (input) devices:")
+    if capture_count <= 0:
+        print("  (none)")
+    for i in range(capture_count):
+        try:
+            name = minimodem.get_capture_device_name(i)
+        except Exception:
+            name = "<error>"
+        print(f"  Device {i}: {name}  |  In")
+    print()

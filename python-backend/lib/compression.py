@@ -1,6 +1,23 @@
 """
 LZNT1 compression and decompression — compatible with Windows RtlCompressBuffer / RtlDecompressBuffer.
+
+Also provides ``crc32_str`` — the medico-legal integrity gate (Phase 7). Every
+transport message carries a ``crc`` field (CRC32 of the ``ct`` string's UTF-8
+bytes). The AHK frontend computes it via ``ntdll!RtlComputeCrc32(0, ...)`` and
+this backend via ``zlib.crc32``; both MUST produce byte-identical values
+(canonical vector ``crc32("123456789") == 0xCBF43926``).
 """
+
+import zlib
+
+
+def crc32_str(text: str) -> int:
+    """CRC32 of a UTF-8 string, matching AHK ntdll!RtlComputeCrc32(0, ...).
+
+    Standard reflected CRC-32 (polynomial 0xEDB88320, init=0xFFFFFFFF,
+    xorout=0xFFFFFFFF). Returns ``0xCBF43926`` for ``"123456789"``.
+    """
+    return zlib.crc32(text.encode("utf-8")) & 0xFFFFFFFF
 
 
 def lznt1_decompress(compressed: bytes, max_output_size: int = 262144) -> bytes:
