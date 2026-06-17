@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-04-01T15:23:32.432Z"
-last_activity: 2026-04-01
+status: executing
+stopped_at: Completed 07-02-PLAN.md
+last_updated: "2026-06-17T04:00:03.000Z"
+last_activity: 2026-06-17 -- Completed 07-02 (minimodem API + RX thread + Wave 0 gate)
 progress:
-  total_phases: 6
+  total_phases: 7
   completed_phases: 6
-  total_plans: 12
-  completed_plans: 12
-  percent: 0
+  total_plans: 17
+  completed_plans: 14
+  percent: 82
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** The LLM must never fabricate findings. Every extracted finding must trace to the radiologist's draft input.
-**Current focus:** Phase 06 — pipeline-integration
+**Current focus:** Phase 07 — replace-ggwave-with-minimodem-both-sides
 
 ## Current Position
 
-Phase: 06
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-01
+Phase: 07 (replace-ggwave-with-minimodem-both-sides) — EXECUTING
+Plan: 3 of 5
+Status: Executing Phase 07
+Last activity: 2026-06-17 -- Completed 07-02 (minimodem API + RX thread + Wave 0 gate)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
@@ -64,6 +64,8 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 05 P02 | 4min | 2 tasks | 4 files |
 | Phase 06 P01 | 4min | 3 tasks | 4 files |
 | Phase 06 P02 | 3min | 2 tasks | 6 files |
+| Phase 07 P01 | 20min | 3 tasks | 19 files |
+| Phase 07 P02 | 40min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -96,6 +98,14 @@ Recent decisions affecting current work:
 - [Phase 06]: PIPELINE_MODE env var defaults to test for backward compatibility
 - [Phase 06]: Golden files generated from actual pipeline output then committed as reference
 - [Phase 06]: Snapshot comparison uses strip + CRLF->LF normalization for cross-platform compatibility
+- [Phase 07]: RX thread uses pthreads (portable to Linux .so); one mutex guards all queue access (Pitfall 7)
+- [Phase 07]: Half-duplex read-and-discard during TX via is_transmitting flag (Pitfall 3)
+- [Phase 07]: -UNDEBUG forced on DLL+loopback — vendored tone generator emits the audio write inside assert(); NDEBUG stripped it so TX emitted silence (Rule 1 bug)
+- [Phase 07]: CRC32 over UTF-8 bytes of ct; vectors 0xCBF43926 + 0xBF16E982 baked identically into Python+AHK tests
+
+### Roadmap Evolution
+
+- Phase 7 added: Replace ggwave with minimodem (both sides) — design spec at docs/superpowers/specs/2026-06-17-minimodem-transport-design.md
 
 ### Pending Todos
 
@@ -109,6 +119,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-01T15:19:52.736Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-06-17T04:00:03.000Z
+Stopped at: Completed 07-02-PLAN.md
 Resume file: None
