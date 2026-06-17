@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Shell scripts must stay LF even in a Windows working tree, otherwise MSYS/
+# MinGW bash chokes on CRLF (e.g. minimodem-wrapper/*.sh build scripts).
+*.sh text eol=lf
