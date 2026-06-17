@@ -26,10 +26,13 @@ import os
 # Shared library resolution + load
 # ---------------------------------------------------------------------------
 
-# Linux artifact name (the Pi target). On Windows dev boxes this file may not
-# exist; the import of this module still succeeds lazily only when load() is
-# called, so static checks/imports of sibling modules do not require the .so.
-_LIB_NAME = "libminimodem_simple.so"
+# Linux artifact names (the Pi target). NOTE: the wrapper's CMakeLists sets
+# PREFIX "" so the produced file is `minimodem_simple.so`; the design contract /
+# AHK side refer to it as `libminimodem_simple.so`. Search BOTH so the binding
+# loads whichever name the build/installer placed on the Pi. On Windows dev
+# boxes neither file exists; load() is lazy so importing this module (and its
+# siblings) succeeds without the .so present.
+_LIB_NAMES = ("libminimodem_simple.so", "minimodem_simple.so")
 
 # Default search: alongside the backend package dir, then this lib/ dir, then
 # an absolute fallback via LD_LIBRARY_PATH / system loader (bare name).
@@ -41,17 +44,20 @@ _lib = None  # populated by load()
 
 def _resolve_lib_path() -> str:
     """Resolve an absolute path to the wrapper .so, with sensible fallbacks."""
-    candidates = [
-        os.path.join(_BACKEND_DIR, _LIB_NAME),
-        os.path.join(_LIB_DIR, _LIB_NAME),
-        os.path.join(_BACKEND_DIR, "lib", _LIB_NAME),
-        os.path.join(_BACKEND_DIR, "build", _LIB_NAME),
+    search_dirs = [
+        _BACKEND_DIR,
+        _LIB_DIR,
+        os.path.join(_BACKEND_DIR, "lib"),
+        os.path.join(_BACKEND_DIR, "build"),
+        os.path.join(_BACKEND_DIR, "..", "minimodem-wrapper", "build"),
     ]
-    for path in candidates:
-        if os.path.isfile(path):
-            return path
+    for d in search_dirs:
+        for name in _LIB_NAMES:
+            path = os.path.join(d, name)
+            if os.path.isfile(path):
+                return path
     # Last resort: let the dynamic loader search (LD_LIBRARY_PATH / ldconfig).
-    return _LIB_NAME
+    return _LIB_NAMES[0]
 
 
 def _bind_signatures(lib: ctypes.CDLL) -> None:
