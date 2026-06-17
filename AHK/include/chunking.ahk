@@ -6,7 +6,52 @@
 ; Outbound: splitting a message dict into transmittable chunk JSON strings
 ; ---------------------------------------------------------------------------
 
+; ===========================================================================
+; v1 ACTIVE PATH: single frame + CRC32 (Phase 7)
+; ===========================================================================
+; Per 07-CONTEXT.md (Integrity v1): every message is sent as ONE frame with
+; ci=0, cc=1 and a `crc` field = Crc32Str(ct). No compression/chunking is used
+; on the active send path (latency-first). The split/reassemble functions below
+; (ChunkMessageSplit / ReassembleChunks) are RETAINED but DORMANT, ready for v2.
+;
+; ChunkMessage is the stable public entry point used by the MainLoop send call
+; site (main_dll.ahk: `chunks := ChunkMessage(sendDict)` then
+; `SendChunkedMessage(chunks, msgID)`). It now returns a single-element array
+; holding the single CRC-protected frame so the MainLoop send path requires no
+; change and routes through the single-frame path.
+
 ChunkMessage(msgDict) {
+    ; v1: always produce ONE single frame (ci=0, cc=1) with crc = Crc32Str(ct),
+    ; newline-terminated (the wrapper splits the FSK byte stream on "`n").
+    ; Returns a 1-element Array for compatibility with SendChunkedMessage.
+    msgID := msgDict.Has("id") ? msgDict["id"] : ""
+    ct := msgDict.Has("ct") ? msgDict["ct"] : ""
+
+    ; Build single frame, copying all caller-supplied fields (id, fn, ct, st, ...)
+    single := Map()
+    for key, val in msgDict {
+        single[key] := val
+    }
+    single["ci"] := 0
+    single["cc"] := 1
+    if (single.Has("z")) {
+        single.Delete("z")  ; legacy compression flag never used on v1 path
+    }
+    ; Attach the integrity field: CRC32 over the UTF-8 bytes of ct (matches Python)
+    single["crc"] := Crc32Str(ct)
+
+    ; Newline-delimited framing: the wrapper accumulates bytes until "`n".
+    singleJson := Jxon_Dump(single) . "`n"
+
+    LogMessage("CHUNK", "ID: " . msgID . " | Single frame (" . StrLen(singleJson) . " bytes, crc=" . single["crc"] . ")")
+    return [singleJson]
+}
+
+; ---------------------------------------------------------------------------
+; DORMANT (v2): legacy LZNT1 + Base64 split into multiple chunk frames.
+; Retained per 07-CONTEXT.md for future chunking; NOT on the active send path.
+; ---------------------------------------------------------------------------
+ChunkMessageSplit(msgDict) {
     ; Split a message dict into an Array of JSON strings for transmission.
     ; Short messages (content < COMPRESSION_THRESHOLD and JSON fits in payload)
     ; are sent as a single frame with ci=0, cc=0.
@@ -84,8 +129,10 @@ ChunkMessage(msgDict) {
 }
 
 SendChunkedMessage(chunks, msgID) {
-    ; Send an array of chunk JSON strings sequentially via the DLL.
-    ; Stores chunks in lastSentChunks for retransmission.
+    ; v1: `chunks` is a single-element Array holding ONE CRC-protected frame
+    ; (from ChunkMessage). Send that frame via minimodem and store it in
+    ; lastSentChunks[msgID] so a `retx` request resends the same single frame.
+    ; The loop below also tolerates the dormant multi-chunk path for v2.
     global lastSentChunks, INTER_CHUNK_DELAY
 
     lastSentChunks[msgID] := chunks
@@ -99,14 +146,14 @@ SendChunkedMessage(chunks, msgID) {
     }
 
     for i, chunkJson in chunks {
-        ; Send chunk via DLL
-        result := DllCall("ggwave_simple\ggwave_simple_send",
+        ; Send frame via minimodem DLL
+        result := DllCall("minimodem_simple\minimodem_simple_send",
             "AStr", chunkJson,
             "Int", 50,  ; Volume (1-100)
             "Int")
 
         if (result < 0) {
-            errorMsg := GetGGWaveError()
+            errorMsg := GetMinimodemError()
             LogMessage("SEND_FAIL", "ID: " . msgID . " | Chunk " . i . "/" . totalChunks . " | Error: " . errorMsg)
             ToolTip()
             MsgBox("Failed to send chunk " . i . "/" . totalChunks . ": " . errorMsg, "Error", "Icon!")
@@ -120,11 +167,11 @@ SendChunkedMessage(chunks, msgID) {
         }
 
         ; Wait for transmission to complete
-        while (DllCall("ggwave_simple\ggwave_simple_is_transmitting", "Int")) {
+        while (DllCall("minimodem_simple\minimodem_simple_is_transmitting", "Int")) {
             Sleep(50)
         }
 
-        ; Inter-chunk delay (except after last chunk)
+        ; Inter-chunk delay (except after last chunk; dormant for single frame)
         if (i < totalChunks) {
             Sleep(INTER_CHUNK_DELAY)
         }
@@ -148,12 +195,13 @@ ProcessAudio() {
         return
     }
 
-    ; Process audio buffers
-    DllCall("ggwave_simple\ggwave_simple_process", "Int")
+    ; Process audio buffers (near no-op: the wrapper's background RX thread
+    ; does the demod pumping; kept for API compatibility).
+    DllCall("minimodem_simple\minimodem_simple_process", "Int")
 
-    ; Check for received message
+    ; Drain one received newline-framed message
     buffer_msg := Buffer(512, 0)
-    received := DllCall("ggwave_simple\ggwave_simple_receive",
+    received := DllCall("minimodem_simple\minimodem_simple_receive",
         "Ptr", buffer_msg.Ptr,
         "Int", 512,
         "Int")
@@ -175,7 +223,37 @@ ProcessAudio() {
             ci := chunkDict.Has("ci") ? chunkDict["ci"] : 0
             cc := chunkDict.Has("cc") ? chunkDict["cc"] : 0
 
-            ; Single message (no chunking)
+            ; ---- v1 ACTIVE PATH: single frame (cc == 1) with CRC32 ----
+            ; Verify integrity before surfacing anything. Per CLAUDE.md
+            ; medico-legal rule, NEVER display a corrupt/partial report: on a
+            ; CRC mismatch we discard the content and request a full-message
+            ; retransmit via the existing retx path.
+            if (cc == 1) {
+                msgID := chunkDict.Has("id") ? chunkDict["id"] : ""
+                ct := chunkDict.Has("ct") ? chunkDict["ct"] : ""
+                receivedCrc := chunkDict.Has("crc") ? chunkDict["crc"] : ""
+                expectedCrc := Crc32Str(ct)
+
+                ; Compare numerically (crc travels as a JSON number)
+                if (receivedCrc == "" || (receivedCrc + 0) != expectedCrc) {
+                    LogMessage("RECV_FAIL", "ID: " . msgID . " | CRC mismatch (got "
+                        . receivedCrc . " expected " . expectedCrc . ") - requesting full retransmit")
+                    ; Request the WHOLE message (single frame ci=0)
+                    SendRetransmissionRequest(msgID, [0])
+                    return
+                }
+
+                completeMsg := Map()
+                for key, val in chunkDict {
+                    if (key != "ci" && key != "cc" && key != "crc") {
+                        completeMsg[key] := val
+                    }
+                }
+                HandleCompleteMessage(completeMsg)
+                return
+            }
+
+            ; ---- DORMANT: legacy single message (no chunking, cc == 0) ----
             if (cc == 0) {
                 completeMsg := Map()
                 for key, val in chunkDict {
@@ -187,7 +265,7 @@ ProcessAudio() {
                 return
             }
 
-            ; Chunked message - buffer the chunk
+            ; ---- DORMANT (v2): multi-chunk message - buffer the chunk ----
             msgID := chunkDict.Has("id") ? chunkDict["id"] : ""
 
             if (!chunkReceiveBuffer.Has(msgID)) {
@@ -329,34 +407,40 @@ CheckChunkTimeouts() {
 }
 
 SendRetransmissionRequest(msgID, missingChunks) {
-    ; Send a retransmission request for missing chunks.
+    ; Send a retransmission request. On the v1 single-frame path this requests
+    ; the WHOLE message (ci=[0]); the dormant chunked path may request specific
+    ; missing chunk indices.
     retxDict := Map(
         "id", msgID,
         "fn", "retx",
         "ci", missingChunks
     )
 
-    retxJson := Jxon_Dump(retxDict)
+    ; Newline-delimited framing (the wrapper splits the FSK byte stream on "`n")
+    retxJson := Jxon_Dump(retxDict) . "`n"
     LogMessage("RETX_SEND", "ID: " . msgID . " | Requesting chunks: " . Jxon_Dump(missingChunks))
 
-    result := DllCall("ggwave_simple\ggwave_simple_send",
+    result := DllCall("minimodem_simple\minimodem_simple_send",
         "AStr", retxJson,
         "Int", 50,
         "Int")
 
     if (result < 0) {
-        LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetGGWaveError())
+        LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetMinimodemError())
         return
     }
 
     ; Wait for transmission to complete
-    while (DllCall("ggwave_simple\ggwave_simple_is_transmitting", "Int")) {
+    while (DllCall("minimodem_simple\minimodem_simple_is_transmitting", "Int")) {
         Sleep(50)
     }
 }
 
 HandleRetransmissionRequest(retxDict) {
-    ; Handle a retransmission request by resending the requested chunks.
+    ; Handle a retransmission request by resending the requested frame(s) from
+    ; lastSentChunks. On the v1 single-frame path lastSentChunks[msgID] holds
+    ; exactly one frame (index 0), so a `retx` with ci=[0] resends the whole
+    ; message. The loop also covers the dormant multi-chunk case.
     global lastSentChunks, INTER_CHUNK_DELAY
 
     msgID := retxDict.Has("id") ? retxDict["id"] : ""
@@ -375,18 +459,19 @@ HandleRetransmissionRequest(retxDict) {
         if (idx >= 1 && idx <= chunks.Length) {
             LogMessage("RETX", "ID: " . msgID . " | Resending chunk " . ci)
 
-            result := DllCall("ggwave_simple\ggwave_simple_send",
+            ; chunks[idx] already includes its newline terminator (from ChunkMessage)
+            result := DllCall("minimodem_simple\minimodem_simple_send",
                 "AStr", chunks[idx],
                 "Int", 50,
                 "Int")
 
             if (result < 0) {
-                LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetGGWaveError())
+                LogMessage("RETX_FAIL", "ID: " . msgID . " | Send failed: " . GetMinimodemError())
                 continue
             }
 
             ; Wait for transmission to complete
-            while (DllCall("ggwave_simple\ggwave_simple_is_transmitting", "Int")) {
+            while (DllCall("minimodem_simple\minimodem_simple_is_transmitting", "Int")) {
                 Sleep(50)
             }
 
