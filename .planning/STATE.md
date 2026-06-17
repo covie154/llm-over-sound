@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-02-PLAN.md
-last_updated: "2026-06-17T04:00:03.000Z"
-last_activity: 2026-06-17 -- Completed 07-02 (minimodem API + RX thread + Wave 0 gate)
+stopped_at: Completed 07-03-PLAN.md
+last_updated: "2026-06-17T04:30:00.000Z"
+last_activity: 2026-06-17 -- Completed 07-03 (AHK frontend transport swap to minimodem single-frame + CRC32)
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 17
-  completed_plans: 14
-  percent: 82
+  completed_plans: 15
+  percent: 88
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 ## Current Position
 
 Phase: 07 (replace-ggwave-with-minimodem-both-sides) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Executing Phase 07
-Last activity: 2026-06-17 -- Completed 07-02 (minimodem API + RX thread + Wave 0 gate)
+Last activity: 2026-06-17 -- Completed 07-03 (AHK frontend transport swap to minimodem single-frame + CRC32)
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Progress: [████░░░░░░] 40%
 | Phase 06 P02 | 3min | 2 tasks | 6 files |
 | Phase 07 P01 | 20min | 3 tasks | 19 files |
 | Phase 07 P02 | 40min | 3 tasks | 6 files |
+| Phase 07 P03 | 25min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,10 @@ Recent decisions affecting current work:
 - [Phase 07]: Half-duplex read-and-discard during TX via is_transmitting flag (Pitfall 3)
 - [Phase 07]: -UNDEBUG forced on DLL+loopback — vendored tone generator emits the audio write inside assert(); NDEBUG stripped it so TX emitted silence (Rule 1 bug)
 - [Phase 07]: CRC32 over UTF-8 bytes of ct; vectors 0xCBF43926 + 0xBF16E982 baked identically into Python+AHK tests
+- [Phase 07]: AHK ChunkMessage now emits a single newline-framed frame (ci=0, cc=1) with crc=Crc32Str(ct); legacy split renamed to dormant ChunkMessageSplit; MainLoop call site unchanged
+- [Phase 07]: AHK receive verifies CRC before surfacing; mismatch -> discard + full-message retransmit (ci=[0]), never displays a corrupt report (medico-legal)
+- [Phase 07]: BAUD_RATE global (default 1200) in config.ahk passed to minimodem_simple_init; old protocol-id arg is now baud
+- [Phase 07]: AHK CRC compared numerically ((received+0) != expected) and retx frames newline-terminated to match wrapper framing (deviations, Rules 2+3)
 
 ### Roadmap Evolution
 
@@ -119,6 +124,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-17T04:00:03.000Z
-Stopped at: Completed 07-02-PLAN.md
+Last session: 2026-06-17T04:30:00.000Z
+Stopped at: Completed 07-03-PLAN.md
 Resume file: None
