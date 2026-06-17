@@ -52,6 +52,16 @@ target_include_directories(minimodem_simple PRIVATE
 # Avoid the "lib" prefix so the artifact is minimodem_simple.dll / .so name kept clean
 set_target_properties(minimodem_simple PROPERTIES PREFIX "")
 
+# CRITICAL (Plan 07-02): the vendored simple-tone-generator.c emits the actual
+# audio write INSIDE an assert():
+#     assert( simpleaudio_write(sa_out, buf, nsamples_dur) > 0 );
+# Upstream minimodem never builds with -DNDEBUG, so this side effect is always
+# present. A Release build defines NDEBUG, which strips the assert AND its
+# write() call -> TX silently emits NOTHING. Force NDEBUG off for every config so
+# the load-bearing assert side effects survive. (Vendored source kept verbatim
+# per 07-01; the fix lives in the build, not the upstream file.)
+target_compile_options(minimodem_simple PRIVATE -UNDEBUG)
+
 # ---------------------------------------------------------------------------
 # Platform-specific deps
 # ---------------------------------------------------------------------------
@@ -119,9 +129,33 @@ endif()
 # Wired here now so the CMake target exists; only built once the source lands.
 # ---------------------------------------------------------------------------
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/loopback_test.c")
-    add_executable(minimodem_loopback test/loopback_test.c)
+    # The loopback test drives the engine directly (mm_build_config / mm_tx_bytes
+    # / mm_rx_step / simpleaudio_*), which are INTERNAL symbols not exported from
+    # the DLL. So compile the core + vendored DSP straight into the exe (its own
+    # in-memory simpleaudio backend replaces the WinMM/ALSA device backend).
+    # The test only needs the mm_core engine + DSP + its own in-memory backend;
+    # exclude minimodem_simple.c (pthread + device backend) from the exe.
+    add_executable(minimodem_loopback
+        test/loopback_test.c
+        mm_core.c
+        ${MM_VENDOR_SOURCES})
+
     target_include_directories(minimodem_loopback PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
-    target_link_libraries(minimodem_loopback PRIVATE minimodem_simple)
+    target_compile_definitions(minimodem_loopback PRIVATE MINIMODEM_SIMPLE_BUILD)
+    # Same NDEBUG hazard as the DLL: the vendored tone generator writes audio
+    # inside an assert(). Keep asserts live so TX actually emits samples.
+    target_compile_options(minimodem_loopback PRIVATE -UNDEBUG)
+
+    if(WIN32)
+        target_compile_options(minimodem_loopback PRIVATE
+            -include "${CMAKE_CURRENT_SOURCE_DIR}/vendor/mm_strings_compat.h")
+        if(FFTW3_INCLUDE_DIR)
+            target_include_directories(minimodem_loopback PRIVATE ${FFTW3_INCLUDE_DIR})
+        endif()
+        target_link_libraries(minimodem_loopback PRIVATE ${FFTW3F_STATIC_LIB})
+    else()
+        target_link_libraries(minimodem_loopback PRIVATE ${FFTW3F_LIB} m)
+    endif()
 endif()
