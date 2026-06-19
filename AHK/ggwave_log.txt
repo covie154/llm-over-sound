@@ -70,3 +70,25 @@
 [2026-02-27 21:41:51.051] [RETX] ID: 7p3BW6m | Resending chunk 19
 [2026-02-27 21:41:58.565] [RETX] ID: 7p3BW6m | Resending chunk 20
 [2026-02-27 21:42:06.076] [RETX] ID: 7p3BW6m | Resending chunk 21
+[2026-06-17 22:37:40.689] [SESSION] Application started - Speaker: -1, Mic: -1, Baud: 1200
+[2026-06-17 22:37:45.158] [CHUNK] ID: 0Oo6PYS | Single frame (79 bytes, crc=2346098258)
+[2026-06-17 22:37:51.116] [SEND] ID: 0Oo6PYS | Chunk 1/1 | Content: {"cc":1,"ci":0,"crc":2346098258,"ct":"Hello world","fn":"test","id":"0Oo6PYS"}\n
+[2026-06-17 22:37:51.126] [SEND_OK] ID: 0Oo6PYS | All 1 chunk(s) sent
+[2026-06-17 22:40:32.277] [SESSION] Application started - Speaker: 0, Mic: 4, Baud: 1200
+[2026-06-17 22:41:42.881] [CHUNK] ID: 15omYoi | Single frame (476 bytes, crc=2503694791)
+[2026-06-17 22:42:18.577] [SEND] ID: 15omYoi | Chunk 1/1 | Content: {"cc":1,"ci":0,"crc":2503694791,"ct":"{\"Pancreas\": \"The imaged pancreas is unremarkable.\", \"Liver\": \"The liver surface is smooth. The liver parenchyma shows increase echogenicity. Multiple simple cysts are seen in the liver. Diameter of CBD at porta hepatis 4 mm.\", \"Gallbladder\": \"Negative Murphy's Sign Cystic lesion in wall. Comet tail artifact .\", \"Spleen\": \"Normal in length, no focal splenic lesion is seen. Length 9.9 cm.\"}","fn":"test","id":"15omYoi"}\n
+[2026-06-17 22:42:18.584] [SEND_OK] ID: 15omYoi | All 1 chunk(s) sent
+[2026-06-17 22:42:54.937] [SESSION] Application started - Speaker: 0, Mic: 4, Baud: 9600
+[2026-06-17 22:42:59.573] [CHUNK] ID: 1aSuOZA | Single frame (476 bytes, crc=2503694791)
+[2026-06-17 22:43:35.221] [SEND] ID: 1aSuOZA | Chunk 1/1 | Content: {"cc":1,"ci":0,"crc":2503694791,"ct":"{\"Pancreas\": \"The imaged pancreas is unremarkable.\", \"Liver\": \"The liver surface is smooth. The liver parenchyma shows increase echogenicity. Multiple simple cysts are seen in the liver. Diameter of CBD at porta hepatis 4 mm.\", \"Gallbladder\": \"Negative Murphy's Sign Cystic lesion in wall. Comet tail artifact .\", \"Spleen\": \"Normal in length, no focal splenic lesion is seen. Length 9.9 cm.\"}","fn":"test","id":"1aSuOZA"}\n
+[2026-06-17 22:43:35.226] [SEND_OK] ID: 1aSuOZA | All 1 chunk(s) sent
+[2026-06-17 22:45:46.909] [RECV_RAW] Bytes: 511 | Raw: ������������������������������������������������������������������_������������������������������������������������������������~����������������������������������������������������������������������������������������������������������������[�����������������������������������������������������������������������������������������>����������������������������q�����������������������������������������������������������޿���?����������ۻ��������������}�����������������������������?���~���... [truncated, 509 total chars]
+[2026-06-17 22:45:46.910] [RECV_FAIL] Error: Expecting JSON value(string, number, [true, false, null], object or array): line 1 col 1 (char 1) | Raw: ������������������������������������������������������������������_������������������������������������������������������������~����������������������������������������������������������������������������������������������������������������[�����������������������������������������������������������������������������������������>����������������������������q�����������������������������������������������������������޿���?����������ۻ��������������}�����������������������������?���~���... [truncated, 509 total chars]
+[2026-06-17 22:54:31.976] [SESSION] Application started - Speaker: 0, Mic: 0, Baud: 9600
+[2026-06-17 22:54:34.470] [CHUNK] ID: 1YAcheY | Single frame (477 bytes, crc=927099609)
+[2026-06-17 22:54:35.008] [SEND] ID: 1YAcheY | Chunk 1/1 | Content: {"cc":1,"ci":0,"crc":927099609,"ct":"{\"Pancreas\": \"The imaged pancreas is unremarkable.\", \"Liver\": \"The liver surface is smooth. The liver parenchyma shows increase echogenicity. Multiple simple cysts are seen in the liver. Diameter of CBD at porta hepatis 4 mm.\", \"Gallbladder\": \"Negative Murphy's Sign Cystic lesion in wall. Comet tail artifact .\", \"Spleen\": \"Normal in length, no focal splenic lesion is seen. Length 9.9 cm.\"}\n","fn":"test","id":"1YAcheY"}\n
+[2026-06-17 22:54:35.014] [SEND_OK] ID: 1YAcheY | All 1 chunk(s) sent
+[2026-06-17 22:54:43.681] [SESSION] Application started - Speaker: 0, Mic: 0, Baud: 1200
+[2026-06-17 22:54:45.255] [CHUNK] ID: 1Zm0Rwh | Single frame (477 bytes, crc=927099609)
+[2026-06-17 22:54:49.263] [SEND] ID: 1Zm0Rwh | Chunk 1/1 | Content: {"cc":1,"ci":0,"crc":927099609,"ct":"{\"Pancreas\": \"The imaged pancreas is unremarkable.\", \"Liver\": \"The liver surface is smooth. The liver parenchyma shows increase echogenicity. Multiple simple cysts are seen in the liver. Diameter of CBD at porta hepatis 4 mm.\", \"Gallbladder\": \"Negative Murphy's Sign Cystic lesion in wall. Comet tail artifact .\", \"Spleen\": \"Normal in length, no focal splenic lesion is seen. Length 9.9 cm.\"}\n","fn":"test","id":"1Zm0Rwh"}\n
+[2026-06-17 22:54:49.270] [SEND_OK] ID: 1Zm0Rwh | All 1 chunk(s) sent
