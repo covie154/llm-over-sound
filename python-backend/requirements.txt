@@ -1,0 +1,20 @@
+# Runtime dependencies for the LLM-over-sound Python backend (Raspberry Pi / Linux SBC).
+#
+# The audio transport uses the minimodem_simple shared library via ctypes
+# (Python stdlib) — there is NO pyaudio/ggwave dependency anymore (removed in
+# Phase 7). You must build minimodem_simple.so separately from minimodem-wrapper/
+# (system deps: build-essential cmake libfftw3-dev libasound2-dev [libpulse-dev]).
+#
+# Everything else the backend needs (ctypes, zlib, json, argparse, logging,
+# pathlib, re, dataclasses, typing) is in the Python standard library.
+
+pydantic>=2,<3            # template schema validation (ConfigDict, model_validator -> Pydantic v2)
+python-frontmatter>=1.1   # YAML frontmatter parsing for .rpt.md templates (imported as `frontmatter`; pulls in PyYAML)
+
+# --- Tests (optional; install with: pip install -r requirements.txt pytest) ---
+# pytest>=7                # runs python-backend/tests/
+
+# --- LLM client (TBD) ---
+# Pipeline stages 1/3/4/5 are stubs today; when LLM integration lands, add the
+# Anthropic SDK here (default to the latest Claude models):
+# anthropic>=0.40
