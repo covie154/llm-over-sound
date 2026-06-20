@@ -34,7 +34,15 @@ endif()
 if(WIN32)
     set(MM_BACKEND_SOURCES simpleaudio-winmm.c)
 else()
-    set(MM_BACKEND_SOURCES vendor/simpleaudio-alsa.c vendor/simpleaudio-pulse.c)
+    # Linux/Pi: ALSA is the appliance target (dedicated USB audio interface, bare
+    # ALSA, no Pulse server). Build ONLY the backends we actually link — compiling
+    # simpleaudio-pulse.c without linking libpulse-simple leaves an undefined
+    # pa_simple_free symbol that breaks dlopen. PulseAudio is opt-in for desktops.
+    option(MM_ENABLE_PULSE "Also build the PulseAudio backend (default OFF: ALSA-only appliance target)" OFF)
+    set(MM_BACKEND_SOURCES vendor/simpleaudio-alsa.c)
+    if(MM_ENABLE_PULSE)
+        list(APPEND MM_BACKEND_SOURCES vendor/simpleaudio-pulse.c)
+    endif()
 endif()
 
 add_library(minimodem_simple SHARED
@@ -103,23 +111,23 @@ if(WIN32)
         ${FFTW3F_STATIC_LIB}
         winmm)
 else()
-    # Linux/Pi: dynamic fftw3f + ALSA/PulseAudio is fine (always present via apt).
+    # Linux/Pi: dynamic fftw3f + ALSA (and PulseAudio only when MM_ENABLE_PULSE).
+    # Compile-time defines MUST match the backends compiled above, or simpleaudio.c
+    # SYSDEFAULT dispatch references a backend that wasn't built. ALSA is the
+    # default SYSDEFAULT here (USE_PULSEAUDIO only added under MM_ENABLE_PULSE).
     target_compile_definitions(minimodem_simple PRIVATE
         MINIMODEM_SIMPLE_BUILD
         USE_ALSA
-        USE_PULSEAUDIO
     )
 
     find_library(FFTW3F_LIB NAMES fftw3f REQUIRED)
-    find_library(ASOUND_LIB NAMES asound)
-    find_library(PULSE_SIMPLE_LIB NAMES pulse-simple)
-    find_library(PULSE_LIB NAMES pulse)
+    find_library(ASOUND_LIB NAMES asound REQUIRED)
+    target_link_libraries(minimodem_simple PRIVATE ${FFTW3F_LIB} ${ASOUND_LIB} pthread m)
 
-    target_link_libraries(minimodem_simple PRIVATE ${FFTW3F_LIB} pthread m)
-    if(ASOUND_LIB)
-        target_link_libraries(minimodem_simple PRIVATE ${ASOUND_LIB})
-    endif()
-    if(PULSE_SIMPLE_LIB AND PULSE_LIB)
+    if(MM_ENABLE_PULSE)
+        find_library(PULSE_SIMPLE_LIB NAMES pulse-simple REQUIRED)
+        find_library(PULSE_LIB NAMES pulse REQUIRED)
+        target_compile_definitions(minimodem_simple PRIVATE USE_PULSEAUDIO)
         target_link_libraries(minimodem_simple PRIVATE ${PULSE_SIMPLE_LIB} ${PULSE_LIB})
     endif()
 endif()
