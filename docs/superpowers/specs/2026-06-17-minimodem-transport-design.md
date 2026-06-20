@@ -200,6 +200,15 @@ wrapper file.
   handshake; more complex.
 - **Goertzel 2-tone detection** to drop the FFTW dependency entirely.
 - Auto baud negotiation between ends.
+- **Audio source auto-recognition + level calibration.** Today device selection
+  is manual on both ends (Windows: WinMM device picker; Pi: bare-ALSA `default`
+  via `~/.asoundrc`), and gain/mute must be set by hand (`alsamixer`, Windows
+  volume) — surfaced during Pi bring-up where capture was silent until the ALSA
+  capture channel was unmuted/armed. Future: auto-detect the correct USB audio
+  interface (e.g. by name match) on each side, and run a calibration handshake
+  (send a known tone/preamble, measure RX level, adjust TX volume / flag
+  under-driven or clipping input) so the link self-tunes instead of relying on
+  manual volume setup per direction.
 
 ## Risks
 - Refactoring minimodem.c's `main()` TX/RX loops into a library is the bulk of

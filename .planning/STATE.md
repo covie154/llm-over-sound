@@ -119,7 +119,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- [Phase 7 / future] Audio source auto-recognition + level calibration — auto-detect the correct USB audio interface on both ends and run a tone/preamble calibration handshake to self-tune TX volume / RX gain, instead of manual device selection + alsamixer/Windows-volume setup. (Surfaced during Pi bring-up: capture was silent until the ALSA capture channel was unmuted/armed.) See docs/superpowers/specs/2026-06-17-minimodem-transport-design.md "Out of scope / v2".
 
 ### Blockers/Concerns
 
