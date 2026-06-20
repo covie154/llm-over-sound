@@ -8,3 +8,4 @@ build/
 # Python
 __pycache__/
 *.pyc
+ggwave
