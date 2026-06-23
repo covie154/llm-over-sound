@@ -151,6 +151,30 @@ def chunk_message(msg_dict: dict) -> list[str]:
 # Inbound: receiving frames; CRC-verified single-frame (v1) + dormant reassembly
 # ---------------------------------------------------------------------------
 
+def extract_json_frame(raw: str) -> str | None:
+    """Recover a single JSON object from a received line wrapped in FSK garbage.
+
+    Async FSK demodulation emits a few spurious bytes while the carrier ramps up,
+    and noise between frames can trigger a brief spurious carrier lock. Those
+    bytes get prepended/appended to the newline-delimited line, so a raw
+    ``json.loads`` fails at column 0 even when the real frame arrived intact
+    (observed: ``\\x..K*\\x..B}{"cc":1,...}``). Our frames are single JSON objects,
+    so slicing from the first ``{`` to the last ``}`` recovers the payload. The
+    downstream CRC check is the real integrity gate — a wrongly-sliced frame
+    fails CRC and is rejected, never silently accepted.
+
+    Returns the ``{...}`` substring, or None if there is no brace pair (pure
+    noise — the caller should skip it silently rather than log a parse error).
+    """
+    if not raw:
+        return None
+    start = raw.find("{")
+    end = raw.rfind("}")
+    if start == -1 or end == -1 or end < start:
+        return None
+    return raw[start:end + 1]
+
+
 def handle_received_chunk(chunk_dict: dict) -> dict | None:
     """Process a received frame.
 

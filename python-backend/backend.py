@@ -32,6 +32,7 @@ from lib import (
     log_session_start,
     log_session_end,
     chunk_message,
+    extract_json_frame,
     handle_received_chunk,
     check_chunk_timeouts,
     send_chunks,
@@ -171,11 +172,20 @@ def main():
             logger.info(f"[RECV_RAW] Bytes: {len(msg)} | Raw: {truncate_for_log(msg)}")
 
             try:
+                # Recover the JSON object from any FSK carrier-acquisition garbage
+                # wrapping the line (leading/trailing junk bytes, or a spurious
+                # carrier lock on noise between frames).
+                frame = extract_json_frame(msg)
+                if frame is None:
+                    # No brace pair -> pure noise between transmissions. Skip quietly.
+                    logger.debug(f"[RECV_SKIP] No frame in line (noise) | Raw: {truncate_for_log(msg)}")
+                    continue
+
                 # Parse JSON.
                 try:
-                    chunk_dict = json.loads(msg)
+                    chunk_dict = json.loads(frame)
                 except json.JSONDecodeError as je:
-                    logger.error(f"[RECV_FAIL] Invalid JSON: {je} | Raw: {truncate_for_log(msg)}")
+                    logger.warning(f"[RECV_FAIL] Invalid JSON after extraction: {je} | Raw: {truncate_for_log(msg)}")
                     continue
 
                 # Handle retransmission request from frontend.

@@ -7,6 +7,7 @@ from .compression import lznt1_compress, lznt1_decompress, crc32_str
 from . import minimodem
 from .chunking import (
     chunk_message,
+    extract_json_frame,
     handle_received_chunk,
     check_chunk_timeouts,
     send_chunks,
@@ -46,6 +47,7 @@ __all__ = [
     "minimodem",
     # chunking
     "chunk_message",
+    "extract_json_frame",
     "handle_received_chunk",
     "check_chunk_timeouts",
     "send_chunks",
