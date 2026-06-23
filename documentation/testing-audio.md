@@ -25,10 +25,12 @@ round trip**, which is bottlenecked by the audio channel (not the code).
 | Windows TX audio | ✅ correct | waveform: continuous, correct 1200/300-baud tones, good level |
 | Pi ALSA capture path | ✅ receives signal | `arecord` VU meter moves; capture recorded |
 | **Acoustic round-trip decode** | ❌ marginal | tones smeared by speaker→air→mic; CRC fails |
+| **Wired (UCA202 ×2) decode** | ✅ frames intact | JSON frame arrives complete over line-out→line-in; framing now tolerant of FSK acquisition garbage |
 
 **Bottom line:** modem, framing, CRC, levels, and frequencies are all correct. The
-acoustic channel smears two closely-spaced FSK tones. The wired line-out→line-in path
-(the actual target hardware) is expected to resolve this.
+acoustic channel smears two closely-spaced FSK tones; the **wired Behringer UCA202
+line-level path decodes cleanly** (the intended target hardware). Two UCA202s (Pi card 0,
+PC side) gave intact frames on the first wired attempt.
 
 ---
 
@@ -97,6 +99,15 @@ Phase 7 shipped in four waves (see phase SUMMARYs), then a series of hardware br
   baud/code.** `confidence ≈ 1.5` is minimodem's floor (it's guessing on noise).
 - **Per-byte `CARRIER/NOCARRIER` flicker ≠ audio gaps.** Spectral analysis showed the
   transmission is one continuous burst; the flicker was just low-confidence wobble.
+- **FSK carrier-acquisition garbage wraps each frame.** Async FSK demod emits a few
+  spurious bytes while the carrier ramps up, and noise between frames can trigger a brief
+  spurious carrier lock. These bytes get prepended/appended to the newline-framed line
+  (`\x..K*\x..B}{"cc":1,...}`), so a raw `json.loads`/`Jxon_Load` fails at column 0 even
+  though the payload is intact. Fix: recover the JSON object by slicing first-`{` to
+  last-`}` (`extract_json_frame` in `chunking.py`; brace-slice in `chunking.ahk`) — CRC
+  stays the integrity gate, so a mis-sliced frame fails CRC and is rejected. Lines with no
+  brace pair are pure noise → skipped quietly. *(This was the last blocker on the wired
+  round trip.)*
 - **Acoustic smears closely-spaced tones.** At 300 baud Bell‑103 the mark/space are only
   ~200 Hz apart (≈1070/1270 Hz); a consumer speaker→air→mic path spread the energy across
   1050–1270 Hz, blurring the two tones → bit errors → CRC reject. Level was fine (peak
@@ -131,9 +142,10 @@ Phase 7 shipped in four waves (see phase SUMMARYs), then a series of hardware br
 ## Next steps
 
 **Immediate — finish the round trip (Wave 4 / Plan 07-05):**
-1. **Validate over the wired cable** (line-out → line-in). Direct electrical path = sharp
-   tones, no reverb; expected to decode cleanly at 1200 (and likely higher). This is the
-   target hardware and unblocks the rest of Wave 4.
+1. ~~Validate over the wired cable.~~ **DONE (2026-06-24)** — two UCA202s over line-out→line-in
+   decode intact frames at 1200 baud (after the FSK-garbage framing fix). Next: confirm the
+   full **response path** (backend echoes via `TestPipeline` → frontend displays it) and the
+   reverse direction.
 2. Run the **CRC + full-retransmit** integrity test (induce corruption → confirm no partial
    report ever surfaces) and the **baud sweep** (1200/4800/9600, both ends matched; record
    where the interface passband fails — note high baud may need a tone override).
