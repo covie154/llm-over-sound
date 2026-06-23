@@ -193,6 +193,18 @@ def main():
                     handle_retransmission_request(chunk_dict, volume)
                     continue
 
+                # Ignore our OWN responses echoed back (self-loop / cross-talk between
+                # the two interfaces). A request carries "fn" and no "st"; a response
+                # always carries "st". Without this guard the backend reprocesses its
+                # own output in a runaway feedback loop (each pass re-wraps the previous
+                # response: "Processed function  with content: Processed function ...").
+                if "st" in chunk_dict:
+                    logger.debug(
+                        f"[RECV_SKIP] Ignoring echoed response id={chunk_dict.get('id')} "
+                        f"(st={chunk_dict.get('st')})"
+                    )
+                    continue
+
                 # Handle frame (CRC-verified single frame; None if mismatch/incomplete).
                 complete_msg = handle_received_chunk(chunk_dict)
                 if complete_msg is None:

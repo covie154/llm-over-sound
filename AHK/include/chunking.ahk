@@ -232,6 +232,16 @@ ProcessAudio() {
                 return
             }
 
+            ; Ignore echoes of our OWN requests (self-loop / cross-talk between the
+            ; two interfaces). The frontend only ever consumes RESPONSES, which carry
+            ; "st"; a request carries "fn" and no "st". Without this guard the frontend
+            ; would surface its own outgoing request as if it were a reply.
+            if (!chunkDict.Has("st")) {
+                LogMessage("RECV_SKIP", "Ignoring echoed request (no st) ID: "
+                    . (chunkDict.Has("id") ? chunkDict["id"] : ""))
+                return
+            }
+
             ; Get ci/cc
             ci := chunkDict.Has("ci") ? chunkDict["ci"] : 0
             cc := chunkDict.Has("cc") ? chunkDict["cc"] : 0
