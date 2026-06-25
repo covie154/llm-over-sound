@@ -25,12 +25,16 @@ round trip**, which is bottlenecked by the audio channel (not the code).
 | Windows TX audio | ✅ correct | waveform: continuous, correct 1200/300-baud tones, good level |
 | Pi ALSA capture path | ✅ receives signal | `arecord` VU meter moves; capture recorded |
 | **Acoustic round-trip decode** | ❌ marginal | tones smeared by speaker→air→mic; CRC fails |
-| **Wired (UCA202 ×2) decode** | ✅ frames intact | JSON frame arrives complete over line-out→line-in; framing now tolerant of FSK acquisition garbage |
+| **Wired (UCA202 ×2) decode** | ✅ frames intact | JSON frame arrives complete over line-out→line-in; framing tolerant of FSK acquisition garbage |
+| **Bidirectional round trip** | ✅ **COMPLETE (2026-06-25)** | PC→Pi request + Pi→PC response both decode; `RECV_OK` on both ends |
 
-**Bottom line:** modem, framing, CRC, levels, and frequencies are all correct. The
-acoustic channel smears two closely-spaced FSK tones; the **wired Behringer UCA202
-line-level path decodes cleanly** (the intended target hardware). Two UCA202s (Pi card 0,
-PC side) gave intact frames on the first wired attempt.
+**Bottom line:** the minimodem cutover is **functionally validated end-to-end over the
+wired Behringer UCA202 link** — a draft round-trips and the formatted (echo) reply comes
+back intact. Acoustic remains marginal (tone smearing) and is not the target. Closing the
+round trip required, beyond the modem itself: robust frame extraction (FSK acquisition
+garbage), a request/response echo guard (self-loop via cross-talk), **wiring both stereo
+RCA channels** (mono modem over a stereo interface), and correct Windows recording
+settings (Listen-to-device OFF, sane formats, enhancements off).
 
 ---
 
@@ -106,8 +110,35 @@ Phase 7 shipped in four waves (see phase SUMMARYs), then a series of hardware br
   though the payload is intact. Fix: recover the JSON object by slicing first-`{` to
   last-`}` (`extract_json_frame` in `chunking.py`; brace-slice in `chunking.ahk`) — CRC
   stays the integrity gate, so a mis-sliced frame fails CRC and is rejected. Lines with no
-  brace pair are pure noise → skipped quietly. *(This was the last blocker on the wired
-  round trip.)*
+  brace pair are pure noise → skipped quietly. **Refinement:** the garbage can itself
+  contain a stray `{` (`…{+…&{"cc":…}`), so a first-`{`/last-`}` slice picks the junk brace
+  and fails — scan *every* `{` and take the first that parses (Python `raw_decode`; AHK
+  loops `Jxon_Load` over candidates). `raw_decode` also ignores trailing garbage.
+- **Request/response feedback loop via self-echo.** Each interface has internal out→in
+  cross-talk, so a side hears its own transmission. The backend was reprocessing its OWN
+  responses as new requests → runaway loop that re-wrapped the reply each pass
+  (`Processed function  with content: Processed function …`). Fix: enforce the
+  request/response discriminator the protocol already had — a request carries `fn`/no `st`,
+  a response always carries `st`. Backend ignores frames with `st`; frontend ignores frames
+  without `st` (except `retx`). This makes echoes/cross-talk harmless.
+- **Mono modem over a STEREO interface → wire BOTH RCA channels.** The UCA202 is stereo
+  (L+R) but the wrapper opens the stream mono (1 ch, 48 kHz). The OS bridges it: output is
+  duplicated to both L+R; input is down-mixed by **averaging L+R**. So a single RCA per run
+  gives a halved/garbled (or flat) capture — you MUST connect **both red+white channels on
+  every cable run, both directions, both ends**. This was the final blocker on the round
+  trip. (Applies identically on ALSA and on Windows/WinMM.)
+- **Return line is silent when idle — don't trust an idle recording.** The reply only
+  occupies the wire for ~0.7 s right after a request. A flat-line recording of the return
+  path while idle is expected, not a fault; and a *perfectly* flat (zero) capture usually
+  means the recorder's input device is wrong, not that the cable is dead.
+- **Windows 11 recording settings matter.** On the PC UCA202: set it as the AHK input with
+  level up; **Listen → "Listen to this device" must be OFF** (else it loops input→output and
+  re-creates the echo); Advanced format 2-ch/48000 (16-bit fine — WinMM falls back to S16);
+  disable audio enhancements/AGC. Swapping interfaces can change Windows' device
+  enumeration — re-confirm the AHK device dialog after any swap.
+- **Don't debug by swapping hardware randomly** — it turns the rig into a moving target.
+  Lock the wiring, change one variable at a time, and use the **logs as ground truth**
+  (backend `[RECV_RAW]` for forward, frontend for return) rather than ad-hoc recordings.
 - **Acoustic smears closely-spaced tones.** At 300 baud Bell‑103 the mark/space are only
   ~200 Hz apart (≈1070/1270 Hz); a consumer speaker→air→mic path spread the energy across
   1050–1270 Hz, blurring the two tones → bit errors → CRC reject. Level was fine (peak
@@ -142,10 +173,10 @@ Phase 7 shipped in four waves (see phase SUMMARYs), then a series of hardware br
 ## Next steps
 
 **Immediate — finish the round trip (Wave 4 / Plan 07-05):**
-1. ~~Validate over the wired cable.~~ **DONE (2026-06-24)** — two UCA202s over line-out→line-in
-   decode intact frames at 1200 baud (after the FSK-garbage framing fix). Next: confirm the
-   full **response path** (backend echoes via `TestPipeline` → frontend displays it) and the
-   reverse direction.
+1. ~~Validate over the wired cable + full bidirectional round trip.~~ **DONE (2026-06-25)** —
+   two UCA202s over line-out→line-in, both stereo channels wired, correct Windows recording
+   settings: a `test` draft round-trips and the `TestPipeline` echo reply returns intact
+   (`RECV_OK` on both ends) at 1200 baud. The minimodem cutover is functionally validated.
 2. Run the **CRC + full-retransmit** integrity test (induce corruption → confirm no partial
    report ever surfaces) and the **baud sweep** (1200/4800/9600, both ends matched; record
    where the interface passband fails — note high baud may need a tone override).
