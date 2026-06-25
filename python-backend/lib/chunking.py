@@ -157,22 +157,33 @@ def extract_json_frame(raw: str) -> str | None:
     Async FSK demodulation emits a few spurious bytes while the carrier ramps up,
     and noise between frames can trigger a brief spurious carrier lock. Those
     bytes get prepended/appended to the newline-delimited line, so a raw
-    ``json.loads`` fails at column 0 even when the real frame arrived intact
-    (observed: ``\\x..K*\\x..B}{"cc":1,...}``). Our frames are single JSON objects,
-    so slicing from the first ``{`` to the last ``}`` recovers the payload. The
-    downstream CRC check is the real integrity gate — a wrongly-sliced frame
-    fails CRC and is rejected, never silently accepted.
+    ``json.loads`` fails even when the real frame arrived intact.
 
-    Returns the ``{...}`` substring, or None if there is no brace pair (pure
-    noise — the caller should skip it silently rather than log a parse error).
+    A naive "first ``{`` to last ``}``" slice breaks when the leading garbage
+    itself contains a stray ``{`` (observed: ``\\x..{+...&{"cc":1,...}`` -> the
+    slice starts at the junk brace and won't parse). Instead we scan every ``{``
+    and use ``raw_decode`` to parse one object starting there, returning the first
+    that yields a dict. ``raw_decode`` also stops at the end of that object, so
+    trailing garbage after the closing ``}`` is ignored. The downstream CRC check
+    remains the real integrity gate — a wrongly-extracted frame fails CRC and is
+    rejected, never silently accepted.
+
+    Returns the ``{...}`` substring, or None if no ``{`` begins a valid JSON
+    object (pure noise — the caller should skip it silently, not log a parse error).
     """
     if not raw:
         return None
-    start = raw.find("{")
-    end = raw.rfind("}")
-    if start == -1 or end == -1 or end < start:
-        return None
-    return raw[start:end + 1]
+    decoder = json.JSONDecoder()
+    i = raw.find("{")
+    while i != -1:
+        try:
+            obj, end = decoder.raw_decode(raw, i)
+            if isinstance(obj, dict):
+                return raw[i:end]
+        except json.JSONDecodeError:
+            pass
+        i = raw.find("{", i + 1)
+    return None
 
 
 def handle_received_chunk(chunk_dict: dict) -> dict | None:

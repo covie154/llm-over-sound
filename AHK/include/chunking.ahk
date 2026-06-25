@@ -210,22 +210,32 @@ ProcessAudio() {
         message := StrGet(buffer_msg, received, "UTF-8")
         LogMessage("RECV_RAW", "Bytes: " . received . " | Raw: " . TruncateForLog(message))
 
-        ; Recover the JSON object from any FSK carrier-acquisition garbage wrapping
-        ; the line (leading/trailing junk bytes, or a spurious carrier lock on noise
-        ; between frames). Our frames are single JSON objects, so slice from the first
-        ; "{" to the last "}". The CRC check below is the real integrity gate, so a
-        ; mis-sliced frame fails CRC and is rejected, never silently accepted.
-        startPos := InStr(message, "{")
+        ; Recover the JSON object from FSK carrier-acquisition garbage wrapping the
+        ; line. The garbage can itself contain a stray "{" (e.g. "...{+...&{"cc":...}"),
+        ; so we cannot just take the first "{": scan each "{" (to the last "}") and take
+        ; the first substring that parses. CRC below remains the integrity gate. No
+        ; parseable object -> pure noise / corrupt -> skip quietly.
         endPos := InStr(message, "}", false, -1)
-        if (startPos = 0 || endPos = 0 || endPos < startPos) {
-            ; No brace pair -> pure noise between transmissions. Skip quietly.
+        chunkDict := ""
+        searchPos := 1
+        while (endPos > 0) {
+            bracePos := InStr(message, "{", false, searchPos)
+            if (bracePos = 0 || bracePos > endPos)
+                break
+            candidate := SubStr(message, bracePos, endPos - bracePos + 1)
+            try {
+                chunkDict := Jxon_Load(&candidate)
+                break
+            } catch {
+                chunkDict := ""
+                searchPos := bracePos + 1
+            }
+        }
+        if (!IsObject(chunkDict)) {
             return
         }
-        frame := SubStr(message, startPos, endPos - startPos + 1)
 
         try {
-            chunkDict := Jxon_Load(&frame)
-
             ; Handle retransmission request from backend
             if (chunkDict.Has("fn") && chunkDict["fn"] == "retx") {
                 HandleRetransmissionRequest(chunkDict)
