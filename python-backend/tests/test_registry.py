@@ -175,10 +175,10 @@ def test_registry_includes_composite_aliases():
 # -- Standalone import -------------------------------------------------------
 
 def test_standalone_import():
-    """FWRK-01: Template sub-package source has no ggwave/pyaudio imports.
+    """FWRK-01: Template sub-package source has no ggwave/pyaudio imports (Phase 7 migration guard).
 
     Per Phase 02 decision: check source code for audio imports rather than
-    sys.modules, since other test modules may load ggwave as a side effect.
+    sys.modules, since other test modules may have loaded ggwave-era modules as a side effect.
     """
     import inspect
     from lib.templates import registry as reg_mod

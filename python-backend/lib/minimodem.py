@@ -2,7 +2,7 @@
 ctypes binding to the minimodem FSK wrapper shared library
 (``libminimodem_simple.so`` on the Pi/Linux backend).
 
-This replaces the ggwave Python binding in the transport path. The wrapper
+This is the minimodem FSK transport binding (replaced the old ggwave Python binding). The wrapper
 mirrors ``ggwave_simple.h`` / ``minimodem_simple.h`` exactly so this binding is
 symmetric with the AHK frontend's ``DllCall`` model: same 12-function API, with
 ``protocolId`` replaced by ``baud`` (and ``set_protocol`` -> ``set_baud``).

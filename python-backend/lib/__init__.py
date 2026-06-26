@@ -1,5 +1,5 @@
 """
-lib — shared modules for the ggwave radiology backend.
+lib — shared modules for the minimodem radiology backend.
 """
 
 from .config import logger, truncate_for_log, log_session_start, log_session_end

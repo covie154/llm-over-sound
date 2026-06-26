@@ -133,7 +133,7 @@ class TestStandaloneImport:
     """Tests for import isolation (FWRK-01)."""
 
     def test_standalone_import(self):
-        """lib.templates module tree does not import ggwave, pyaudio, or audio.
+        """lib.templates module tree does not import ggwave, pyaudio, or audio (verifies Phase 7 transport isolation).
 
         Verifies by inspecting the source code of lib/templates/ modules
         to confirm no audio-related imports exist. In a shared test session,

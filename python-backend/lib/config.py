@@ -1,5 +1,5 @@
 """
-Shared configuration constants and logging setup for the ggwave backend.
+Shared configuration constants and logging setup for the minimodem backend.
 """
 
 import logging
@@ -14,7 +14,7 @@ LOG_MAX_CONTENT_LENGTH = 500  # Truncate long messages in log
 COMPRESSION_THRESHOLD = 100  # Only compress messages longer than this (in characters)
 
 # ==================== Chunking Configuration ====================
-GGWAVE_PAYLOAD_LIMIT = 140    # Max bytes per ggwave transmission (kMaxLengthVariable)
+MODEM_PAYLOAD_LIMIT = 140     # Max bytes per minimodem transmission (dormant chunking path)
 CHUNK_DATA_SIZE = 70           # Max base64 content chars per chunk
 INTER_CHUNK_DELAY = 0.5        # Seconds between chunk transmissions
 CHUNK_REASSEMBLY_TIMEOUT = 30  # Seconds before requesting retransmission
@@ -22,7 +22,7 @@ CHUNK_REASSEMBLY_TIMEOUT = 30  # Seconds before requesting retransmission
 
 def setup_logging() -> logging.Logger:
     """Configure logging with both file and console output."""
-    logger = logging.getLogger("ggwave_backend")
+    logger = logging.getLogger("minimodem_backend")
 
     if not LOG_ENABLED:
         logging.disable(logging.CRITICAL)
@@ -68,7 +68,7 @@ def log_session_start():
     """Log session start with separator."""
     separator = "=" * 80
     logger.info(separator)
-    logger.info("ggwave Backend Session Started")
+    logger.info("minimodem Backend Session Started")
     logger.info(separator)
 
 

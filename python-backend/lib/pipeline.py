@@ -26,7 +26,7 @@ from lib.templates.renderer import render_report as template_render_report
 from lib.templates.loader import LoadedTemplate
 from lib.templates.exceptions import TemplateNotFoundError
 
-logger = logging.getLogger("ggwave_backend")
+logger = logging.getLogger("minimodem_backend")
 
 
 # ---------------------------------------------------------------------------
