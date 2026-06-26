@@ -157,7 +157,7 @@ def test_pipeline_mode_default():
 
 def test_registry_init_logs(caplog):
     """LLMPipeline logs template count at init (D-11)."""
-    with caplog.at_level(logging.INFO, logger="ggwave_backend"):
+    with caplog.at_level(logging.INFO, logger="minimodem_backend"):
         from lib.pipeline import LLMPipeline
         LLMPipeline()
         assert any(

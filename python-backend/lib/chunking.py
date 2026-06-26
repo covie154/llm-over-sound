@@ -28,7 +28,7 @@ from .config import (
     CHUNK_DATA_SIZE,
     CHUNK_REASSEMBLY_TIMEOUT,
     COMPRESSION_THRESHOLD,
-    GGWAVE_PAYLOAD_LIMIT,
+    MODEM_PAYLOAD_LIMIT,
     INTER_CHUNK_DELAY,
     logger,
     truncate_for_log,
@@ -109,7 +109,7 @@ def chunk_message(msg_dict: dict) -> list[str]:
     single.pop("z", None)
     single_json = json.dumps(single, separators=(",", ":"))
 
-    if len(content) < COMPRESSION_THRESHOLD and len(single_json) <= GGWAVE_PAYLOAD_LIMIT:
+    if len(content) < COMPRESSION_THRESHOLD and len(single_json) <= MODEM_PAYLOAD_LIMIT:
         logger.debug(f"[CHUNK] ID: {msg_id} | Single frame ({len(single_json)} bytes)")
         return [single_json]
 
@@ -135,10 +135,10 @@ def chunk_message(msg_dict: dict) -> list[str]:
         chunk["ct"] = data
         chunk_json = json.dumps(chunk, separators=(",", ":"))
 
-        if len(chunk_json) > GGWAVE_PAYLOAD_LIMIT:
+        if len(chunk_json) > MODEM_PAYLOAD_LIMIT:
             logger.warning(
                 f"[CHUNK] ID: {msg_id} | Chunk {ci}/{cc} is {len(chunk_json)} bytes "
-                f"(limit {GGWAVE_PAYLOAD_LIMIT}). Payload may be truncated."
+                f"(limit {MODEM_PAYLOAD_LIMIT}). Payload may be truncated."
             )
 
         result.append(chunk_json)

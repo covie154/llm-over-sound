@@ -7,8 +7,8 @@ Listens for minimodem FSK audio messages from the AHK frontend, processes them
 through the report-formatting pipeline, and transmits responses back over the
 same FSK audio link.
 
-Phase 7: transport swapped from the old ggwave/PyAudio stack to the minimodem
-ctypes binding (lib/minimodem.py -> libminimodem_simple.so). Messages are single
+Phase 7: transport uses the minimodem ctypes binding (lib/minimodem.py -> libminimodem_simple.so); the old ggwave/PyAudio stack was replaced in Phase 7.
+Messages are single
 newline-framed JSON frames (ci=0, cc=1) carrying a CRC32 of ``ct``; a CRC
 mismatch triggers a full-message retransmit and never surfaces a partial report.
 The 5-stage LLM pipeline is UNCHANGED.
