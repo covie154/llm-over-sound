@@ -12,7 +12,7 @@ InitializeLog() {
     ; Create or append to log file with session separator
     try {
         separator := "`n" . "=" . "=".Repeat(78) . "`n"
-        header := separator . "ggwave Session Started: " . FormatTime(, "yyyy-MM-dd HH:mm:ss") . separator
+        header := separator . "minimodem Session Started: " . FormatTime(, "yyyy-MM-dd HH:mm:ss") . separator
         FileAppend(header, LOG_FILE, "UTF-8")
     }
 }

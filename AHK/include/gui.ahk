@@ -96,7 +96,7 @@ SelectAudioDevices() {
 
 GetMultilineInput() {
     ; Create a GUI for multiline text input
-    inputGui := Gui("+AlwaysOnTop +Resize +MinSize400x300", "ggwave - Send Message")
+    inputGui := Gui("+AlwaysOnTop +Resize +MinSize400x300", "minimodem - Send Message")
     inputGui.SetFont("s10")
     
     inputGui.AddText("xm", "Enter your message to send via audio:")

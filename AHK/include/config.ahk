@@ -20,7 +20,7 @@ global BAUD_RATE := 1200              ; minimodem FSK baud rate (link parameter;
 ; NOTE (Phase 7, v1): chunking is DORMANT. The active transport sends a single
 ; frame (ci=0, cc=1) with a CRC32 field. The constants below are retained for the
 ; dormant split/reassemble code path, reserved for v2 chunking.
-global GGWAVE_PAYLOAD_LIMIT := 140   ; (dormant) Max bytes per legacy transmission
+global MODEM_PAYLOAD_LIMIT := 140    ; (dormant) Max bytes per minimodem transmission
 global CHUNK_DATA_SIZE := 70          ; (dormant) Max base64 content chars per chunk
 global INTER_CHUNK_DELAY := 200       ; (dormant) Milliseconds between chunk transmissions
 global CHUNK_REASSEMBLY_TIMEOUT := 30000  ; (dormant) Milliseconds before requesting retransmission
@@ -31,5 +31,5 @@ global lastSentChunks := Map()        ; {msgID: [chunkJson1, chunkJson2, ...]}
 
 ; ==================== Logging Configuration ====================
 global LOG_ENABLED := true                              ; Enable/disable logging
-global LOG_FILE := A_ScriptDir . "\ggwave_log.txt"     ; Log file path
+global LOG_FILE := A_ScriptDir . "\minimodem_log.txt"   ; Log file path
 global LOG_MAX_CONTENT_LENGTH := 500                    ; Max content length to log (truncate longer messages)

@@ -56,7 +56,7 @@ ChunkMessageSplit(msgDict) {
     ; Short messages (content < COMPRESSION_THRESHOLD and JSON fits in payload)
     ; are sent as a single frame with ci=0, cc=0.
     ; Longer messages are LZNT1-compressed, base64-encoded, and split into chunks.
-    global COMPRESSION_THRESHOLD, GGWAVE_PAYLOAD_LIMIT, CHUNK_DATA_SIZE
+    global COMPRESSION_THRESHOLD, MODEM_PAYLOAD_LIMIT, CHUNK_DATA_SIZE
 
     msgID := msgDict.Has("id") ? msgDict["id"] : ""
     content := msgDict.Has("ct") ? msgDict["ct"] : ""
@@ -73,7 +73,7 @@ ChunkMessageSplit(msgDict) {
     }
     singleJson := Jxon_Dump(single)
 
-    if (StrLen(content) < COMPRESSION_THRESHOLD && StrLen(singleJson) <= GGWAVE_PAYLOAD_LIMIT) {
+    if (StrLen(content) < COMPRESSION_THRESHOLD && StrLen(singleJson) <= MODEM_PAYLOAD_LIMIT) {
         LogMessage("CHUNK", "ID: " . msgID . " | Single frame (" . StrLen(singleJson) . " bytes)")
         return [singleJson]
     }
@@ -339,7 +339,7 @@ HandleCompleteMessage(msgDict) {
     status := msgDict.Has("st") ? msgDict["st"] : ""
 
     LogMessage("RECV_OK", "ID: " . msgID . " | Content: " . TruncateForLog(content))
-    MsgBox("Message ID: " . msgID . "`nStatus: " . status . "`n`nContent:`n" . content, "ggwave - Message Received", "Iconi")
+    MsgBox("Message ID: " . msgID . "`nStatus: " . status . "`n`nContent:`n" . content, "minimodem - Message Received", "Iconi")
 }
 
 ; ---------------------------------------------------------------------------

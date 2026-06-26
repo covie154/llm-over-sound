@@ -31,8 +31,8 @@ Main() {
     }
 
     ; Initialize minimodem with selected devices.
-    ; The old ggwave protocol-id parameter is now the FSK baud rate (link
-    ; parameter; both ends MUST match — see BAUD_RATE in config.ahk).
+    ; The baud rate replaces the old ggwave protocol-id parameter (FSK link parameter;
+    ; both ends MUST match — see BAUD_RATE in config.ahk).
     result := DllCall("minimodem_simple\minimodem_simple_init",
         "Int", selectedSpeakerIndex,
         "Int", selectedMicrophoneIndex,
