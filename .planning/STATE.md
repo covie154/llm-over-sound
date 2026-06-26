@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 Phase: 07 (replace-ggwave-with-minimodem-both-sides) — ROUND TRIP VALIDATED
 Plan: 5 of 5
 Status: minimodem cutover functionally validated end-to-end (wired UCA202, 1200 baud, RECV_OK both ends, 2026-06-25). Wave-4 follow-ups (corruption/baud-sweep tests, retire ggwave DLLs, re-enable compression) outstanding but non-blocking.
-Last activity: 2026-06-25 -- Bidirectional round trip works over wired UCA202 link after audio bring-up (robust frame extraction, request/response echo guard, both-stereo-channels wiring, Windows recording settings). See documentation/testing-audio.md + reflections_250626.md
+Last activity: 2026-06-26 -- Completed quick task 260626-wf6: removed ggwave/quiet references from AHK and Python; renamed GGWAVE_PAYLOAD_LIMIT → MODEM_PAYLOAD_LIMIT; logger → minimodem_backend; deleted legacy ggwave test scripts; added git submodule retirement runbook
 
 Progress: [█████████░] 97%
 
@@ -122,9 +122,14 @@ Recent decisions affecting current work:
 - [Phase 7 follow-up] Remaining Wave-4 / Plan 07-05 validation: CRC + induced-corruption retransmit test; baud sweep (1200/4800/9600 — higher likely viable on the wire); then retire AHK/ggwave_simple.dll + AHK/SDL2.dll (cutover proven). Non-blocking; round trip already works.
 - [Phase 7 follow-up] Re-enable compression (LZNT1 + Base62), gated behind an AHK↔Python cross-impl round-trip check (agreed: first step after round-trip validation).
 - [Phase 7 bug] Fix the `-1`→`plughw:-1,0` Linux device bug in minimodem_simple.c (deviceId<0 should pass NULL → ALSA "default"); currently must pass explicit `-i/-o` indices.
-- [Phase 7 cleanup] Delete legacy ggwave-era scripts python-backend/testing-audio.py + test-output-audio.py (unused; still import pyaudio/ggwave).
 - [Phase 7 / future] Audio source auto-recognition + level calibration — auto-detect the correct USB audio interface on both ends and run a tone/preamble calibration handshake to self-tune TX volume / RX gain, instead of manual device selection + alsamixer/Windows-volume setup. (Surfaced during Pi bring-up: capture was silent until the ALSA capture channel was unmuted/armed.) See docs/superpowers/specs/2026-06-17-minimodem-transport-design.md "Out of scope / v2".
 - [Phase 7 / future] Stereo-aware wrapper option (use one explicit channel) so single-RCA-per-run cabling works; today a mono stream over the stereo UCA202 requires BOTH channels wired. See documentation/testing-audio.md.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260626-wf6 | Remove ggwave/quiet references from AHK frontend and Python backend | 2026-06-26 | fb0664c | [260626-wf6-remove-ggwave-quiet-references-from-ahk-](.planning/quick/260626-wf6-remove-ggwave-quiet-references-from-ahk-/) |
 
 ### Blockers/Concerns
 
